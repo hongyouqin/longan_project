@@ -1,0 +1,6 @@
+[hk]
+#海康配置
+ip = "192.168.90.66"
+port = 8000
+user = admin
+password = shw12345
