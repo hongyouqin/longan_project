@@ -1,6 +1,5 @@
 #include "cameractrl.h"
 #include <qpainter.h>
-#include <QDebug>
 
 
 CameraCtrl::CameraCtrl(QLabel *parent) : QLabel(parent)

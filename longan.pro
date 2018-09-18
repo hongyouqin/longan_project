@@ -24,7 +24,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 unix {
-    LIBS += -L../longan/lib/ -Wl,-rpath=./:./HCNetSDKCom:../longan/lib -lhcnetsdk -lPlayCtrl -lAudioRender -lSuperRender
+    LIBS += -L../longan/lib/ -Wl,-rpath=./:./HCNetSDKCom:../longan/lib -lhcnetsdk -lPlayCtrl -lAudioRender -lSuperRender -larcsoft_fsdk_face_tracking -larcsoft_fsdk_face_recognition
 
     LIBS += -L/usr/local/lib/ -lopencv_highgui -lopencv_core -lopencv_imgproc -lopencv_imgcodecs
 
@@ -33,13 +33,15 @@ unix {
 INCLUDEPATH += \
     -I./includeCn/ \
     -I./arc_face/ \
+    -I./easylogger/ \
+    -I./cpptoml/ \
     /usr/local/include \
     /usr/local/include/opencv \
     /usr/local/include/opencv2
 
 SOURCES += \
-        main.cpp \
-        mainwindow.cpp \
+    main.cpp \
+    mainwindow.cpp \
     hkcamera.cpp \
     facesdata.cpp \
     cameractrl.cpp \
@@ -47,7 +49,17 @@ SOURCES += \
     cameraflowevent.cpp \
     convertimageformat.cpp \
     printexectime.cpp \
-    framedataprocess.cpp
+    framedataprocess.cpp \
+    face_tracking.cpp \
+    face_recognition.cpp \
+    commondefine.cpp \
+    easylogger/elog.c \
+    easylogger/elog_async.c \
+    easylogger/elog_buf.c \
+    easylogger/elog_port.c \
+    easylogger/elog_utils.c \
+    logger.cpp \
+    faceprocess.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -67,7 +79,14 @@ HEADERS += \
     cameraflowevent.h \
     convertimageformat.h \
     printexectime.h \
-    framedataprocess.h
+    framedataprocess.h \
+    face_tracking.h \
+    face_recognition.h \
+    commondefine.h \
+    easylogger/elog.h \
+    easylogger/elog_cfg.h \
+    logger.h \
+    faceprocess.h
 
 FORMS += \
         mainwindow.ui

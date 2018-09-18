@@ -1,10 +1,10 @@
 #include "hkcamera.h"
-#include <QDebug>
 #include <QtWidgets/QApplication>
 #include "mainwindow.h"
 #include "framedata.h"
 #include "includeCn/HCNetSDK.h"
 #include "includeCn/PlayM4.h"
+#include "logger.h"
 
 LONG lPort; //全局的播放库 port 号
 
@@ -14,7 +14,7 @@ void CALLBACK DvrExceptionCallback(DWORD dwType, LONG lUserID, LONG lHandle, voi
     memset(tempbuf, 0, sizeof(tempbuf));
     switch(dwType) {
     case EXCEPTION_RECONNECT: { //预览时重连
-            qDebug() << "dvr:" << tempbuf;
+            LogW("dvr: %s", tempbuf);
         }
         break;
     default:
@@ -114,12 +114,12 @@ HkCamera::~HkCamera()
 bool HkCamera::InitCarema()
 {
     if (camera_is_open_) {
-        qDebug() << "摄像头已经打开";
+        LogI("摄像头已经打开");
         return false;
     }
 
     if (hwnd_ == 0) {
-        qDebug() << "窗口句柄为空";
+        LogI("窗口句柄为空");
         return false;
     }
 
@@ -127,7 +127,7 @@ bool HkCamera::InitCarema()
 
     //设置连接超时时间
     if (!NET_DVR_SetConnectTime(5000, 3)) {
-        qDebug() << "dvr:" << "SetConnectTime error " << NET_DVR_GetLastError();
+        LogE("dvr: SetConnectTime error %d", NET_DVR_GetLastError());
         NET_DVR_Cleanup();
         return false;
     }
@@ -136,14 +136,14 @@ bool HkCamera::InitCarema()
     NET_DVR_DEVICEINFO_V30 struDeviceInfo = {0};
     LONG user_id = NET_DVR_Login_V30("192.168.90.66", 8000, "admin", "shw12345", &struDeviceInfo);\
     if (user_id < 0) {
-        qDebug() << "dvr:" << "login error " << NET_DVR_GetLastError();
+        LogE("dvr: login error %d", NET_DVR_GetLastError());
         NET_DVR_Cleanup();
         return false;
     }
 
     //注册异常消息回调函数
     if (!NET_DVR_SetExceptionCallBack_V30(0, nullptr, DvrExceptionCallback, nullptr)) {
-        qDebug() << "dvr:" << "SetExceptionCallBack error " << NET_DVR_GetLastError();
+        LogE("dvr: SetExceptionCallBack error %d", NET_DVR_GetLastError());
         //注销用户
         NET_DVR_Logout(user_id);
         //释放SDK资源
@@ -160,7 +160,7 @@ bool HkCamera::InitCarema()
     pre_info.bBlocked = 0;//请求码流过程是否阻塞
     LONG lRealPlayHandle = NET_DVR_RealPlay_V40(user_id, &pre_info, RealDataCallBack, (void*)hwnd_);
     if (lRealPlayHandle < 0) {
-        qDebug() << "dvr:" << "NET_DVR_RealPlay_V40 error " << NET_DVR_GetLastError();
+        LogE("dvr: NET_DVR_RealPlay_V40 error %d", NET_DVR_GetLastError());
         //注销用户
         NET_DVR_Logout(user_id);
         //释放SDK资源
@@ -171,7 +171,7 @@ bool HkCamera::InitCarema()
     user_id_ = user_id;
     real_play_handle_ = lRealPlayHandle;
     camera_is_open_ = true;
-    qDebug() << "摄像头成功开启";
+    LogI("摄像头成功开启");
     return true;
 }
 

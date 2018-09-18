@@ -23,6 +23,7 @@ FrameData::FrameData(const FrameData &lh)
     this->height_ = lh.height_;
     this->frame_type_ = lh.frame_type_;
     this->data_size_ = lh.data_size_;
+    this->mat_ = lh.mat_;
 }
 
 FrameData &FrameData::operator=(const FrameData &lh)
@@ -37,7 +38,7 @@ FrameData &FrameData::operator=(const FrameData &lh)
     this->height_ = lh.height_;
     this->frame_type_ = lh.frame_type_;
     this->data_size_ = lh.data_size_;
-
+    this->mat_ = lh.mat_;
     return *this;
 }
 
@@ -59,6 +60,11 @@ bool FrameData::SetFrameData(int width, int height, long type, char *data, int d
     return true;
 }
 
+void FrameData::SetMat(const cv::Mat &mat)
+{
+    mat_ = mat;
+}
+
 char *FrameData::Data() const
 {
     return data_;
@@ -77,4 +83,9 @@ int FrameData::Height() const
 long FrameData::Type() const
 {
     return frame_type_;
+}
+
+cv::Mat FrameData::GetMat() const
+{
+    return mat_;
 }

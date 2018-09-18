@@ -12,6 +12,7 @@ class HkCamera;
 class CameraCtrl;
 class FrameData;
 class FrameDataProcess;
+class FaceProcess;
 
 class MainWindow : public QMainWindow
 {
@@ -26,6 +27,8 @@ public:
     void SendCarameSignal(FrameData& data);
 signals:
     void carame_signal(FrameData& data);
+
+    void frame_push_signal(FrameData& frame);
 private slots:
 private:
     virtual bool event(QEvent *event) override;
@@ -38,6 +41,8 @@ private:
     std::shared_ptr<CameraCtrl> camera_ctrl_ = nullptr;
 
     std::shared_ptr<FrameDataProcess> frame_data_process_ = nullptr;
+
+    std::shared_ptr<FaceProcess> face_process_ = nullptr;
 };
 
 MainWindow* GetMainWindow();

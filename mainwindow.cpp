@@ -1,13 +1,15 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <QDebug>
 #include <QThread>
 #include "cameractrl.h"
 #include "cameraflowevent.h"
 #include "hkcamera.h"
+#include "facesdata.h"
 #include "framedata.h"
 #include "framedataprocess.h"
+#include "faceprocess.h"
 #include "printexectime.h"
+#include "logger.h"
 
 
 namespace {
@@ -40,7 +42,13 @@ MainWindow::~MainWindow()
 
 void MainWindow::Initialize()
 {
+    //安装日志
+    setbuf(stdout, NULL);
+    Logger::InitLog();
+    Logger::StartLog();
+
     qRegisterMetaType<FrameData>("FrameData&");
+    qRegisterMetaType<FacesData>("FacesData&");
 
     frame_data_process_ = std::make_shared<FrameDataProcess>();
     QThread *thread = new QThread();
@@ -49,10 +57,18 @@ void MainWindow::Initialize()
     connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
     thread->start();
 
-    camera_ctrl_ = std::make_shared<CameraCtrl>();
+    camera_ctrl_ = std::make_shared<CameraCtrl>(ui->camera);
     int w = ui->camera->geometry().width();
     int h = ui->camera->geometry().height();
     camera_ctrl_->setFixedSize(w,h);
+
+    face_process_ = std::make_shared<FaceProcess>();
+    QThread *face_thread = new QThread();
+    face_process_->moveToThread(face_thread);
+    connect(this, SIGNAL(frame_push_signal(FrameData&)), face_process_.get(), SLOT(CameraFrame(FrameData&)));
+    connect(face_process_.get(), SIGNAL(faces_detected_signal(const FacesData&)), camera_ctrl_.get(), SLOT(RecvDetectedFaces(const FacesData&)));
+    connect(face_thread, SIGNAL(finished()), face_thread, SLOT(deleteLater()));
+    face_thread->start();
 
     //开启摄像头
     HWND hwnd = (HWND)winId();
@@ -79,6 +95,11 @@ bool MainWindow::event(QEvent *event)
                                  QImage::Format_RGB888);
             ui->camera->setPixmap(QPixmap::fromImage(image));
             this->update();
+
+            //视频流推送到人脸引擎处理
+            FrameData data;
+            data.SetMat(flow_event->GetFaceMat());
+            emit frame_push_signal(data);
         }
     }
 

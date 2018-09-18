@@ -1,5 +1,5 @@
 #include "printexectime.h"
-#include <QDebug>
+#include "logger.h"
 
 PrintExecTime::PrintExecTime()
 {
@@ -11,5 +11,5 @@ PrintExecTime::~PrintExecTime()
     auto end = std::chrono::system_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start_);
     double elapsed = double(duration.count()) * std::chrono::microseconds::period::num / std::chrono::microseconds::period::den;
-    qDebug() << "处理花费的时间: " << elapsed << "秒";
+    LogI("处理花费的时间: %f秒", elapsed);
 }
