@@ -31,14 +31,26 @@ public:
     void SetFormat(unsigned int format);
 
     unsigned int GetFormat() const;
+
+    void SetFaceOrient(int orient);
+
+    int GetFaceOrient() const;
+
+    void SetIndex(int index);
+
+    int GetIndex() const;
 private:
     std::vector<QRect> rect_faces_; //检测到的人脸数据
+
+    int index_ = 0; //人脸vector索引
 
     int frame_width_ = 0;
 
     int frame_height_ = 0;
 
     unsigned int format_ = 0;
+
+    int face_orient_ = 0;
 
     cv::Mat mat_;
 };

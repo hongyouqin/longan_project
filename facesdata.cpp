@@ -54,3 +54,23 @@ unsigned int FacesData::GetFormat() const
 {
     return format_;
 }
+
+void FacesData::SetFaceOrient(int orient)
+{
+    face_orient_ = orient;
+}
+
+int FacesData::GetFaceOrient() const
+{
+    return face_orient_;
+}
+
+void FacesData::SetIndex(int index)
+{
+    index_ = index;
+}
+
+int FacesData::GetIndex() const
+{
+    return index_;
+}

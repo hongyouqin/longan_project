@@ -64,7 +64,8 @@ SOURCES += \
     facefilterbarrier.cpp \
     facefeature.cpp \
     facequeue.cpp \
-    face_analysis_model.cpp
+    face_analysis_model.cpp \
+    face_feature_library.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -98,7 +99,8 @@ HEADERS += \
     facefeature.h \
     facefeature.h \
     facequeue.h \
-    face_analysis_model.h
+    face_analysis_model.h \
+    face_feature_library.h
 
 FORMS += \
         mainwindow.ui

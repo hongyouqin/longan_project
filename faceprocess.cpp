@@ -69,6 +69,8 @@ std::vector<QRect> FaceProcess::Frame(unsigned char *frame_data, int frame_width
       temp_rects.push_back(rect);
     }
 
+    face_orient_ = face_reult->lfaceOrient;
+
     return std::move(temp_rects);
 }
 
@@ -87,6 +89,7 @@ void FaceProcess::CameraFrame(FrameData &frame)
         data.SetFrameHeight(h);
         data.SetFormat(ASVL_PAF_RGB24_B8G8R8);
         data.SetMat(mat);
+        data.SetFaceOrient(face_orient_);
         emit faces_detected_signal(data);
     }
 }

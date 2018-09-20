@@ -25,6 +25,8 @@ public slots:
 
 private:
     std::unique_ptr<FaceTracking> ft_engine_;
+
+    int face_orient_ = 0;
 };
 
 #endif // FACEPROCESS_H

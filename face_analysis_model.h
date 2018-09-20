@@ -6,6 +6,7 @@
 #include <memory>
 
 class FaceAi;
+class FacesData;
 class FaceFilterBarrier;
 
 //人脸分析核心，人脸的比对都在这里调度
@@ -19,7 +20,7 @@ public:
 signals:
 
 public slots:
-
+    void RecvDetectedData(const FacesData& data);
 private:
     std::vector<std::shared_ptr<FaceAi>> reg_face_ai_;//用于注册员工的识别
 

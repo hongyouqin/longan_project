@@ -1,10 +1,13 @@
 #include "faceai.h"
 #include "face_recognition.h"
 #include "facesdata.h"
+#include "facefeature.h"
 #include "logger.h"
 
 FaceAi::FaceAi(QObject *parent) : QObject(parent)
 {
+    face_model_.reset(new FACEMODEL());
+
     fr_engine_ = std::make_shared<FaceRecognition>();
     if (fr_engine_) {
         fr_engine_->Install();
@@ -18,7 +21,7 @@ FaceAi::~FaceAi()
     }
 }
 
-bool FaceAi::AiAnalysis(const FacesData &data)
+bool FaceAi::ExtractFeature(const FacesData &data)
 {
     ASVLOFFSCREEN inputImg = { 0 };
     inputImg.u32PixelArrayFormat = data.GetFormat();
@@ -51,8 +54,42 @@ bool FaceAi::AiAnalysis(const FacesData &data)
         return false;
     }
 
+    //提取脸部特征
+    auto faces = data.GetFacesRect();
+    int index = data.GetIndex();
+    AFR_FSDK_FACEINPUT face_result;
+    face_result.rcFace.left = faces[index].left();
+    face_result.rcFace.top = faces[index].top();
+    face_result.rcFace.right = faces[index].right();
+    face_result.rcFace.bottom = faces[index].bottom();
+    face_result.lOrient =data.GetFaceOrient();
+    long ret = fr_engine_->ExtractFRFeature(&inputImg, &face_result, (LPAFR_FSDK_FACEMODEL)face_model_.get());
+    if (ret != 0) {
+        LogE("人脸特征提取失败: %d", ret);
+        return false;
+    }
+
 
     return true;
+}
+
+float FaceAi::FaceComparison(const std::shared_ptr<FaceFeature> &feature)
+{
+    AFR_FSDK_FACEMODEL ref_feature;
+    ref_feature.pbFeature = face_model_->pbFeature;
+    ref_feature.lFeatureSize = face_model_->lFeatureSize;
+
+    AFR_FSDK_FACEMODEL probe_feature;
+    probe_feature.pbFeature = feature->feature_.get();
+    probe_feature.lFeatureSize = feature->feature_size_;
+    float simil_score = 0.0f;
+    long ret = fr_engine_->FacePairMatching(&ref_feature, &probe_feature, &simil_score);
+    if (ret != 0) {
+        LogE("人脸比对失败: %d", ret);
+        return simil_score;
+    }
+
+    return simil_score;
 }
 
 void FaceAi::RecvDetectedData(const FacesData &data)

@@ -3,12 +3,9 @@
 
 #include <QObject>
 #include <memory>
-#include "facefeature.h"
 
 class FaceAi;
-
-template<class T>
-class FaceQueue;
+class FacesData;
 
 //人脸过滤屏障, 防止同一人，频繁识别
 class FaceFilterBarrier : public QObject
@@ -19,13 +16,16 @@ public:
 
     ~FaceFilterBarrier();
 
-    bool Barrier();
+    /*返回码：
+     * -1，表示人脸特征提取失败
+     * 0, 表示队列里没有此人的特征
+     * 1，表示找到了此人的特征
+    */
+    int Barrier(const FacesData &data);
 signals:
 
 public slots:
 private:
-    std::unique_ptr<FaceQueue<FaceFeature> > face_cache_; //储存最近识别的人脸特征
-
     std::shared_ptr<FaceAi> ai_ = nullptr;
 };
 
