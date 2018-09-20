@@ -6,7 +6,6 @@
 
 QT       += core gui
 QMAKE_CXXFLAGS += -std=c++11
-
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = longan
@@ -59,7 +58,13 @@ SOURCES += \
     easylogger/elog_port.c \
     easylogger/elog_utils.c \
     logger.cpp \
-    faceprocess.cpp
+    faceprocess.cpp \
+    configs.cpp \
+    faceai.cpp \
+    facefilterbarrier.cpp \
+    facefeature.cpp \
+    facequeue.cpp \
+    face_analysis_model.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -86,7 +91,14 @@ HEADERS += \
     easylogger/elog.h \
     easylogger/elog_cfg.h \
     logger.h \
-    faceprocess.h
+    faceprocess.h \
+    configs.h \
+    faceai.h \
+    facefilterbarrier.h \
+    facefeature.h \
+    facefeature.h \
+    facequeue.h \
+    face_analysis_model.h
 
 FORMS += \
         mainwindow.ui

@@ -34,3 +34,23 @@ int FacesData::FrameHeight() const
 {
     return frame_height_;
 }
+
+void FacesData::SetMat(const cv::Mat &mat)
+{
+    mat_ = mat;
+}
+
+cv::Mat FacesData::GetMat() const
+{
+    return mat_;
+}
+
+void FacesData::SetFormat(unsigned int format)
+{
+    format_ = format;
+}
+
+unsigned int FacesData::GetFormat() const
+{
+    return format_;
+}

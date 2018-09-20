@@ -1,5 +1,6 @@
 #include "hkcamera.h"
 #include <QtWidgets/QApplication>
+#include "configs.h"
 #include "mainwindow.h"
 #include "framedata.h"
 #include "includeCn/HCNetSDK.h"
@@ -134,7 +135,8 @@ bool HkCamera::InitCarema()
 
     //用户注册设备
     NET_DVR_DEVICEINFO_V30 struDeviceInfo = {0};
-    LONG user_id = NET_DVR_Login_V30("192.168.90.66", 8000, "admin", "shw12345", &struDeviceInfo);\
+    auto hk = Configs::GetHkConfig();
+    LONG user_id = NET_DVR_Login_V30((char*)hk->ip.c_str(), hk->port, (char*)hk->user.c_str(), (char*)hk->passwrod.c_str(), &struDeviceInfo);\
     if (user_id < 0) {
         LogE("dvr: login error %d", NET_DVR_GetLastError());
         NET_DVR_Cleanup();

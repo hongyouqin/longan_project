@@ -10,6 +10,7 @@
 #include "faceprocess.h"
 #include "printexectime.h"
 #include "logger.h"
+#include "configs.h"
 
 
 namespace {
@@ -46,6 +47,10 @@ void MainWindow::Initialize()
     setbuf(stdout, NULL);
     Logger::InitLog();
     Logger::StartLog();
+
+    if (!Configs::LoadConfig()) {
+        return;
+    }
 
     qRegisterMetaType<FrameData>("FrameData&");
     qRegisterMetaType<FacesData>("FacesData&");

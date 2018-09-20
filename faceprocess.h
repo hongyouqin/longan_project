@@ -16,7 +16,7 @@ public:
 
     ~FaceProcess();
 
-    bool Frame(unsigned char *frame_data,int frame_width,int frame_height, unsigned	int input_image_format);
+    std::vector<QRect> Frame(unsigned char *frame_data,int frame_width,int frame_height, unsigned	int input_image_format);
 
 signals:
     void faces_detected_signal(const FacesData& data); //人脸跟踪信号
