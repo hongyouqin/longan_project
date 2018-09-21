@@ -4,3 +4,7 @@ ip = "192.168.90.66"
 port = 8000
 user = "admin"
 password = "shw12345"
+
+[data_center]
+#数据中心地址
+addr = "localhost:50001"

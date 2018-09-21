@@ -2,6 +2,8 @@
 #include "faceai.h"
 #include "facesdata.h"
 #include "facefilterbarrier.h"
+#include "face_feature_library.h"
+#include "logger.h"
 
 FaceAnalysisModel::FaceAnalysisModel(QObject *parent) : QObject(parent)
 {
@@ -11,6 +13,17 @@ FaceAnalysisModel::FaceAnalysisModel(QObject *parent) : QObject(parent)
 FaceAnalysisModel::~FaceAnalysisModel()
 {
 
+}
+
+bool FaceAnalysisModel::Init()
+{
+    auto face_lib = GetFeatureLib();
+    if (!face_lib->LoadRegFaceLib()) {
+        LogE("加载员工数据失败");
+        return false;
+    }
+
+    return true;
 }
 
 void FaceAnalysisModel::RecvDetectedData(const FacesData &data)

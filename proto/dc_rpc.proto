@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+option java_package = "com.longan.rpc"; //编译器为以此作为生成的Java类的包名
+
+option java_multiple_files = true; //该选项为true时，生成的Java类将是包级别的，否则会在一个包装类中。
+
+package proto;
+
+service LonganDataCenter {
+    //存储员工人脸信息
+    rpc StorageEmployeeFace(UserParam) returns(StorageReply) {}
+
+    //存储陌生人脸信息
+    rpc StorageStrangerFace(UserParam) returns(StorageReply) {}
+
+    //拉取人脸注册表的所有数据
+    rpc ExtractFaceRegTableDatas(ExtractFaceParam) returns(StorageReply) {}
+}
+
+//拉取人脸参数
+message ExtractFaceParam {
+    uint32 count = 1; //拉取人脸个数，这个参数暂时没有用，不传
+}
+
+//用户参数
+message UserParam {
+    string name = 1;
+
+    uint64 user_id = 2; //用户id
+
+    string face_photo = 3; //单张人脸采集照片
+
+    bytes face_feature = 4; //单张人脸特征
+
+    uint64 face_size = 5; //人脸特征大小
+
+    uint64 acquisition_time = 6; //人脸采集注册时间
+
+    uint32 face_score = 7; //人脸分数1-100
+    
+}
+
+//储存结果
+message StorageReply {
+    bool is_success = 1;
+
+    repeated UserParam face_reg_tables = 2; //人脸注册表数据
+}

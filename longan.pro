@@ -27,6 +27,7 @@ unix {
 
     LIBS += -L/usr/local/lib/ -lopencv_highgui -lopencv_core -lopencv_imgproc -lopencv_imgcodecs
 
+    LIBS += -L/usr/local/lib/ -lgrpc++ -lgrpc -lgrpc++_reflection -lprotobuf
 }
 
 INCLUDEPATH += \
@@ -34,6 +35,7 @@ INCLUDEPATH += \
     -I./arc_face/ \
     -I./easylogger/ \
     -I./cpptoml/ \
+    -I./data_center_proto/ \
     /usr/local/include \
     /usr/local/include/opencv \
     /usr/local/include/opencv2
@@ -65,7 +67,10 @@ SOURCES += \
     facefeature.cpp \
     facequeue.cpp \
     face_analysis_model.cpp \
-    face_feature_library.cpp
+    face_feature_library.cpp \
+    data_center_proto/dc_rpc.grpc.pb.cc \
+    data_center_proto/dc_rpc.pb.cc \
+    data_center.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -100,7 +105,10 @@ HEADERS += \
     facefeature.h \
     facequeue.h \
     face_analysis_model.h \
-    face_feature_library.h
+    face_feature_library.h \
+    data_center_proto/dc_rpc.grpc.pb.h \
+    data_center_proto/dc_rpc.pb.h \
+    data_center.h
 
 FORMS += \
         mainwindow.ui

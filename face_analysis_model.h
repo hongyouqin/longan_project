@@ -17,6 +17,8 @@ public:
     explicit FaceAnalysisModel(QObject *parent = nullptr);
 
     ~FaceAnalysisModel();
+
+     bool Init();
 signals:
 
 public slots:

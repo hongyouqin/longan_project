@@ -19,6 +19,11 @@ struct HkParamsConfig {
     std::string passwrod;
 };
 
+//数据中心配置
+struct DataCenterConfig {
+    std::string addr;
+};
+
 class Configs
 {
 public:
@@ -27,10 +32,14 @@ public:
     static bool LoadConfig();
 
     static HkParamsConfig* GetHkConfig();
+
+    static DataCenterConfig* GetDataCenterConfig();
 private:
     static std::shared_ptr<cpptoml::table> tables_;
 
     static HkParamsConfig hk_config_;
+
+    static DataCenterConfig dc_config_;
 };
 
 #endif // CONFIGS_H
