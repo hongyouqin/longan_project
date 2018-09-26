@@ -1,5 +1,7 @@
 #include "faceprocess.h"
+#include <QThread>
 #include "facesdata.h"
+#include "face_analysis_model.h"
 #include "framedata.h"
 #include "face_tracking.h"
 #include "logger.h"
@@ -9,10 +11,20 @@ FaceProcess::FaceProcess(QObject *parent) : QObject(parent)
 {
     ft_engine_.reset(new FaceTracking());
     ft_engine_->Install();
+
+    face_analysis_ = std::make_shared<FaceAnalysisModel>();
+    face_analysis_->Init();
+    QThread *thread = new QThread();
+    face_analysis_->moveToThread(thread);
+    connect(this, SIGNAL(faces_detected_signal(const FacesData&)), face_analysis_.get(), SLOT(RecvDetectedData(const FacesData&)));
+    connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
+    thread->start();
 }
 
 FaceProcess::~FaceProcess()
 {
+    face_analysis_.reset();
+
     if (ft_engine_) {
         ft_engine_->UnInstall();
     }
@@ -82,7 +94,6 @@ void FaceProcess::CameraFrame(FrameData &frame)
     std::vector<QRect> result =  Frame(mat.data, w, h, ASVL_PAF_RGB24_B8G8R8);
     if (!result.empty()) {
         //发送检测到的人脸信息
-        PrintExecTime time;
         FacesData data;
         data.SetFacesRect(std::move(result));
         data.SetFrameWidth(w);

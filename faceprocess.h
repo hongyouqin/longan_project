@@ -7,6 +7,7 @@
 class FaceTracking;
 class FacesData;
 class FrameData;
+class FaceAnalysisModel;
 
 class FaceProcess : public QObject
 {
@@ -25,6 +26,8 @@ public slots:
 
 private:
     std::unique_ptr<FaceTracking> ft_engine_;
+
+    std::shared_ptr<FaceAnalysisModel> face_analysis_;
 
     int face_orient_ = 0;
 };

@@ -1,6 +1,6 @@
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
 #include <QThread>
+#include "ui_mainwindow.h"
 #include "cameractrl.h"
 #include "cameraflowevent.h"
 #include "hkcamera.h"
@@ -34,6 +34,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {  
+    face_process_.reset();
+
     if (camera_) {
         camera_->UnInitCarema();
     }

@@ -16,5 +16,5 @@ int FaceFilterBarrier::Barrier(const FacesData &data)
 {
 
 
-    return 1;
+    return 0;
 }

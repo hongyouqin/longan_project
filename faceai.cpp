@@ -1,13 +1,17 @@
 #include "faceai.h"
+#include "airesult.h"
+#include "aithreadsmanage.h"
 #include "face_recognition.h"
 #include "facesdata.h"
 #include "facefeature.h"
+#include "face_feature_library.h"
 #include "logger.h"
 
 FaceAi::FaceAi(QObject *parent) : QObject(parent)
 {
-    face_model_.reset(new FACEMODEL());
+    segment_numer_.start = segment_numer_.end = 0;
 
+    face_model_ = std::make_shared<FACEMODEL>();
     fr_engine_ = std::make_shared<FaceRecognition>();
     if (fr_engine_) {
         fr_engine_->Install();
@@ -55,6 +59,9 @@ bool FaceAi::ExtractFeature(const FacesData &data)
     }
 
     //提取脸部特征
+    face_model_->pbFeature = nullptr;
+    face_model_->lFeatureSize = 0;
+
     auto faces = data.GetFacesRect();
     int index = data.GetIndex();
     AFR_FSDK_FACEINPUT face_result;
@@ -73,17 +80,22 @@ bool FaceAi::ExtractFeature(const FacesData &data)
     return true;
 }
 
-float FaceAi::FaceComparison(const std::shared_ptr<FaceFeature> &feature)
+float FaceAi::FaceComparison(const std::shared_ptr<FaceFeature> &feature, const FaceFeature& ref_feature)
 {
-    AFR_FSDK_FACEMODEL ref_feature;
-    ref_feature.pbFeature = face_model_->pbFeature;
-    ref_feature.lFeatureSize = face_model_->lFeatureSize;
+    AFR_FSDK_FACEMODEL ref_face_model;
+    if (!ref_feature.feature_) {
+        ref_face_model.pbFeature = face_model_->pbFeature;
+        ref_face_model.lFeatureSize = face_model_->lFeatureSize;
+    } else {
+        ref_face_model.pbFeature = ref_feature.feature_.get();
+        ref_face_model.lFeatureSize = ref_feature.feature_size_;
+    }
 
     AFR_FSDK_FACEMODEL probe_feature;
     probe_feature.pbFeature = feature->feature_.get();
     probe_feature.lFeatureSize = feature->feature_size_;
     float simil_score = 0.0f;
-    long ret = fr_engine_->FacePairMatching(&ref_feature, &probe_feature, &simil_score);
+    long ret = fr_engine_->FacePairMatching(&ref_face_model, &probe_feature, &simil_score);
     if (ret != 0) {
         LogE("人脸比对失败: %d", ret);
         return simil_score;
@@ -92,7 +104,120 @@ float FaceAi::FaceComparison(const std::shared_ptr<FaceFeature> &feature)
     return simil_score;
 }
 
-void FaceAi::RecvDetectedData(const FacesData &data)
+void FaceAi::SetSegmentNumber(const SEGMENTNUMER &segment)
+{
+    segment_numer_ = segment;
+}
+
+void FaceAi::SetFaceModle(unsigned char *feature, int size)
+{
+    memcpy(face_model_->pbFeature, feature, size);
+    face_model_->lFeatureSize = size;
+}
+
+std::shared_ptr<FACEMODEL> FaceAi::GetFaceModle()
+{
+    return face_model_;
+}
+
+void FaceAi::set_serial_number(int number)
+{
+    serial_number_ = number;
+}
+
+int FaceAi::serial_number() const
+{
+    return serial_number_;
+}
+
+void FaceAi::set_type(AiTypeEnum type)
+{
+    type_ = type;
+}
+
+AiTypeEnum FaceAi::type() const
+{
+    return type_;
+}
+
+void FaceAi::set_stop_signal(bool stop)
+{
+    stop_signal_ = stop;
+}
+
+bool FaceAi::stop_signal() const
+{
+    return stop_signal_;
+}
+
+void FaceAi::RecvEmployeeData(const FaceFeature& face)
+{
+    auto face_lib = GetFeatureLib()->GetRegFaceLib();
+    int count = static_cast<int>(face_lib.size());
+    int start = segment_numer_.start;
+    int end = segment_numer_.end;
+    if (end > count) {
+        end = count;
+    }
+
+   std::shared_ptr<FaceFeature> result = nullptr;
+    float score = 0.0f;
+    float max_score = 0.0f;
+    for (int index = start; index < end; ++index) {
+        if (stop_signal()) {
+            break;
+        }
+        auto feature = face_lib[index];
+        score = FaceComparison(feature, face);
+        if (score > max_score) {
+           max_score = score;
+           result = feature;
+        }
+    }
+   // LogI("人脸最大分数: %f", max_score);
+
+    if (stop_signal()) {
+        set_stop_signal(false);
+        LogI("%d线程停止识别", serial_number());
+
+        AiResult ai_result;
+        ai_result.find_match_ = false;
+        ai_result.frame_serial_ = face.frame_number_;
+        ai_result.feature_ = std::make_shared<FaceFeature>(face);
+        ai_result.package_serial_ = serial_number();
+        ai_result.package_num_ = GetAiManageObj()->GetRegFaceNum();
+        ai_result_signal(ai_result);
+        return;
+    }
+
+    if (max_score > 0.50) {
+        //匹配上了
+
+        //通知其他线程停止识别，（包括陌生人线程）
+        GetAiManageObj()->NotifyAllAiStop();
+        set_stop_signal(false);
+        //推送
+        LogI("识别信息： name=%s; userid=%d; face_photo=%s; timestamp=%u", result->name.c_str(), result->user_id_, result->face_photo.c_str(), result->timestamp);
+        AiResult employee_res;
+        employee_res.find_match_ = true;
+        employee_res.frame_serial_ = face.frame_number_;
+        employee_res.feature_ = result;
+        employee_res.package_serial_ = serial_number();
+        employee_res.package_num_ = GetAiManageObj()->GetRegFaceNum();
+    }
+
+    //推送结果
+    AiResult ai_result;
+    ai_result.find_match_ = max_score > 0.65 ? true : false;
+    ai_result.frame_serial_ = face.frame_number_;
+    ai_result.feature_ = std::make_shared<FaceFeature>(face);
+    ai_result.package_serial_ = serial_number();
+    ai_result.package_num_ = GetAiManageObj()->GetRegFaceNum();
+    ai_result_signal(ai_result);
+
+}
+
+void FaceAi::RecvStorageData(const FaceFeature& face)
 {
 
 }

@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <QMetaType>
+#include <cv.h>
 
 
 //人脸特征
@@ -23,6 +24,10 @@ struct FaceFeature {
     std::unique_ptr<unsigned char[], deleter> feature_ = {nullptr, auto_deleter};//特征
 
     int feature_size_ = 0;
+
+    unsigned long frame_number_ = 0;
+
+    cv::Mat mat_;
 
     FaceFeature();
 

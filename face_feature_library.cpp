@@ -63,12 +63,26 @@ bool FaceFeatureLibrary::LoadRegFaceLib()
             memcpy(face_feature.get(), buf, size);
             feature->feature_ = std::move(face_feature);
             feature->feature_size_ = (*iter).face_size();
+
+            std::lock_guard<std::mutex> lock(reg_face_mutex_);
             reg_face_lib_.emplace_back(feature);
         }
-
+        return true;
     }
 
 
     return false;
+}
+
+size_t FaceFeatureLibrary::GetRegFaceCount()
+{
+    std::lock_guard<std::mutex> lock(reg_face_mutex_);
+    return reg_face_lib_.size();
+}
+
+std::vector<std::shared_ptr<FaceFeature> > FaceFeatureLibrary::GetRegFaceLib()
+{
+    std::lock_guard<std::mutex> lock(reg_face_mutex_);
+    return reg_face_lib_;
 }
 

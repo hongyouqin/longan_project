@@ -70,7 +70,10 @@ SOURCES += \
     face_feature_library.cpp \
     data_center_proto/dc_rpc.grpc.pb.cc \
     data_center_proto/dc_rpc.pb.cc \
-    data_center.cpp
+    data_center.cpp \
+    aithreadsmanage.cpp \
+    airesultreport.cpp \
+    airesult.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -108,7 +111,10 @@ HEADERS += \
     face_feature_library.h \
     data_center_proto/dc_rpc.grpc.pb.h \
     data_center_proto/dc_rpc.pb.h \
-    data_center.h
+    data_center.h \
+    aithreadsmanage.h \
+    airesultreport.h \
+    airesult.h
 
 FORMS += \
         mainwindow.ui
