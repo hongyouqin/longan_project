@@ -22,7 +22,7 @@ public:
 
     void AddCache(const std::shared_ptr<FaceFeature>& feature);
 
-    int GetCacheLen() const;
+    int GetCacheLen();
 
     std::shared_ptr<FaceFeature> GetCache(int index);
 
@@ -44,6 +44,8 @@ private:
     std::vector<std::shared_ptr<FaceFeature>> reg_face_lib_; //注册的人脸数据库
 
     std::mutex reg_face_mutex_; //注册人脸库容器互斥量
+
+    std::mutex cache_mutex_;
 };
 
 FaceFeatureLibrary* GetFeatureLib();

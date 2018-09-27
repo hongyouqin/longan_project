@@ -59,6 +59,8 @@ public:
     bool stop_signal() const;
 signals:
     void ai_result_signal(const AiResult& result);
+
+    void ai_employee_result_signal(const AiResult& result);
 public slots:
     void RecvEmployeeData(const FaceFeature& face);
 

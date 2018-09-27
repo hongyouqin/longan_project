@@ -23,6 +23,8 @@ FaceProcess::FaceProcess(QObject *parent) : QObject(parent)
 
 FaceProcess::~FaceProcess()
 {
+    disconnect(this, SIGNAL(faces_detected_signal(const FacesData&)), face_analysis_.get(), SLOT(RecvDetectedData(const FacesData&)));
+
     face_analysis_.reset();
 
     if (ft_engine_) {

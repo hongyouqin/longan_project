@@ -34,6 +34,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {  
+    disconnect(this, SIGNAL(frame_push_signal(FrameData&)), face_process_.get(), SLOT(CameraFrame(FrameData&)));
     face_process_.reset();
 
     if (camera_) {

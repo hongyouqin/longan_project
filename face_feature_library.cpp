@@ -12,7 +12,7 @@ FaceFeatureLibrary* GetFeatureLib() {
 
 FaceFeatureLibrary::FaceFeatureLibrary(QObject *parent) : QObject(parent)
 {
-    face_cache_.reset(new FaceQueue<std::shared_ptr<FaceFeature>>(50));
+    face_cache_.reset(new FaceQueue<std::shared_ptr<FaceFeature>>(100));
 }
 
 FaceFeatureLibrary::~FaceFeatureLibrary()
@@ -22,11 +22,13 @@ FaceFeatureLibrary::~FaceFeatureLibrary()
 
 void FaceFeatureLibrary::AddCache(const std::shared_ptr<FaceFeature>& feature)
 {
+    std::lock_guard<std::mutex> lock(cache_mutex_);
     face_cache_->Push(feature);
 }
 
-int FaceFeatureLibrary::GetCacheLen() const
+int FaceFeatureLibrary::GetCacheLen()
 {
+    std::lock_guard<std::mutex> lock(cache_mutex_);
     return face_cache_->Len();
 }
 
@@ -37,6 +39,7 @@ std::shared_ptr<FaceFeature> FaceFeatureLibrary::GetCache(int index)
         LogA("%d索引超出队列了");
         return nullptr;
     }
+    std::lock_guard<std::mutex> lock(cache_mutex_);
     return face_cache_->GetAt(index);
 }
 

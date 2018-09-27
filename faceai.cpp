@@ -1,6 +1,7 @@
 #include "faceai.h"
 #include "airesult.h"
 #include "aithreadsmanage.h"
+#include "configs.h"
 #include "face_recognition.h"
 #include "facesdata.h"
 #include "facefeature.h"
@@ -72,7 +73,7 @@ bool FaceAi::ExtractFeature(const FacesData &data)
     face_result.lOrient =data.GetFaceOrient();
     long ret = fr_engine_->ExtractFRFeature(&inputImg, &face_result, (LPAFR_FSDK_FACEMODEL)face_model_.get());
     if (ret != 0) {
-        LogE("人脸特征提取失败: %d", ret);
+        //LogE("人脸特征提取失败: %d", ret);
         return false;
     }
 
@@ -160,21 +161,22 @@ void FaceAi::RecvEmployeeData(const FaceFeature& face)
         end = count;
     }
 
-   std::shared_ptr<FaceFeature> result = nullptr;
+    std::shared_ptr<FaceFeature> result = nullptr;
+    auto config = Configs::GetSystemConfig();
+    float ref_score = config->face_score;
+
     float score = 0.0f;
-    float max_score = 0.0f;
     for (int index = start; index < end; ++index) {
         if (stop_signal()) {
             break;
         }
         auto feature = face_lib[index];
         score = FaceComparison(feature, face);
-        if (score > max_score) {
-           max_score = score;
+        if (score > ref_score) {
            result = feature;
+           break;
         }
     }
-   // LogI("人脸最大分数: %f", max_score);
 
     if (stop_signal()) {
         set_stop_signal(false);
@@ -190,25 +192,26 @@ void FaceAi::RecvEmployeeData(const FaceFeature& face)
         return;
     }
 
-    if (max_score > 0.50) {
+    if (result) {
         //匹配上了
 
         //通知其他线程停止识别，（包括陌生人线程）
         GetAiManageObj()->NotifyAllAiStop();
         set_stop_signal(false);
         //推送
-        LogI("识别信息： name=%s; userid=%d; face_photo=%s; timestamp=%u", result->name.c_str(), result->user_id_, result->face_photo.c_str(), result->timestamp);
+       // LogI("识别信息： name=%s; userid=%d; face_photo=%s; timestamp=%u", result->name.c_str(), result->user_id_, result->face_photo.c_str(), result->timestamp);
         AiResult employee_res;
         employee_res.find_match_ = true;
         employee_res.frame_serial_ = face.frame_number_;
         employee_res.feature_ = result;
         employee_res.package_serial_ = serial_number();
         employee_res.package_num_ = GetAiManageObj()->GetRegFaceNum();
+        ai_employee_result_signal(employee_res);
     }
 
     //推送结果
     AiResult ai_result;
-    ai_result.find_match_ = max_score > 0.65 ? true : false;
+    ai_result.find_match_ = (result) ? true : false;
     ai_result.frame_serial_ = face.frame_number_;
     ai_result.feature_ = std::make_shared<FaceFeature>(face);
     ai_result.package_serial_ = serial_number();

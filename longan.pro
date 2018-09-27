@@ -28,6 +28,8 @@ unix {
     LIBS += -L/usr/local/lib/ -lopencv_highgui -lopencv_core -lopencv_imgproc -lopencv_imgcodecs
 
     LIBS += -L/usr/local/lib/ -lgrpc++ -lgrpc -lgrpc++_reflection -lprotobuf
+
+    LIBS += -lhiredis
 }
 
 INCLUDEPATH += \
@@ -73,7 +75,8 @@ SOURCES += \
     data_center.cpp \
     aithreadsmanage.cpp \
     airesultreport.cpp \
-    airesult.cpp
+    airesult.cpp \
+    push_redis.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -114,7 +117,8 @@ HEADERS += \
     data_center.h \
     aithreadsmanage.h \
     airesultreport.h \
-    airesult.h
+    airesult.h \
+    push_redis.h
 
 FORMS += \
         mainwindow.ui

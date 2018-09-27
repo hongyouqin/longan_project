@@ -24,6 +24,11 @@ struct DataCenterConfig {
     std::string addr;
 };
 
+//系统配置
+struct SystemConfig {
+    float face_score;
+};
+
 class Configs
 {
 public:
@@ -34,12 +39,16 @@ public:
     static HkParamsConfig* GetHkConfig();
 
     static DataCenterConfig* GetDataCenterConfig();
+
+    static SystemConfig* GetSystemConfig();
 private:
     static std::shared_ptr<cpptoml::table> tables_;
 
     static HkParamsConfig hk_config_;
 
     static DataCenterConfig dc_config_;
+
+    static SystemConfig system_config_;
 };
 
 #endif // CONFIGS_H

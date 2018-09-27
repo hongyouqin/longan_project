@@ -1,5 +1,4 @@
 #include "face_analysis_model.h"
-#include <climits>
 #include "aithreadsmanage.h"
 #include "faceai.h"
 #include "facesdata.h"
@@ -70,7 +69,7 @@ void FaceAnalysisModel::RecvDetectedData(const FacesData &data)
         face_feature.mat_ = face_data.GetMat();
 
         //人脸缓存队列，同一人被频繁识别
-        if (1 == face_filter_->Barrier(face_data)) {
+        if (1 == face_filter_->Barrier(face_feature)) {
             //人脸找到
             continue;
         }

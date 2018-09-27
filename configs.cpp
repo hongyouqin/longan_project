@@ -12,6 +12,8 @@ HkParamsConfig Configs::hk_config_;
 
 DataCenterConfig Configs::dc_config_;
 
+SystemConfig Configs::system_config_;
+
 Configs::Configs()
 {
 
@@ -30,6 +32,9 @@ bool Configs::LoadConfig()
 
         //read dc
         dc_config_.addr = tables_->get_qualified_as<std::string>("data_center.addr").value_or("");
+
+        //read system
+        system_config_.face_score = (float)tables_->get_qualified_as<double>("system.face_score").value_or(0.0);
     }
     catch (const cpptoml::parse_exception &e)
     {
@@ -47,4 +52,9 @@ HkParamsConfig *Configs::GetHkConfig()
 
 DataCenterConfig *Configs::GetDataCenterConfig(){
     return &dc_config_;
+}
+
+SystemConfig *Configs::GetSystemConfig()
+{
+    return &system_config_;
 }

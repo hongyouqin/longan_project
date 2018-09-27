@@ -46,6 +46,7 @@ void AiThreadsManage::AllocateThreads()
         ai->moveToThread(thread);
         connect(this, SIGNAL(frame_face_featrue_signal(const FaceFeature&)), ai.get(), SLOT(RecvEmployeeData(const FaceFeature&)));
         connect(ai.get(), SIGNAL(ai_result_signal(const AiResult&)), ai_report_.get(), SLOT(RecvAiResult(const AiResult&)));
+        connect(ai.get(), SIGNAL(ai_employee_result_signal(const AiResult&)), ai_report_.get(), SLOT(RecvEmployeeResult(const AiResult&)));
         connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
         thread->start();
         std::lock_guard<std::mutex> lock(reg_face_mutex_);

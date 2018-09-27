@@ -5,7 +5,7 @@
 #include <memory>
 
 class FaceAi;
-class FacesData;
+class FaceFeature;
 
 //人脸过滤屏障, 防止同一人，频繁识别
 class FaceFilterBarrier : public QObject
@@ -21,7 +21,7 @@ public:
      * 0, 表示队列里没有此人的特征
      * 1，表示找到了此人的特征
     */
-    int Barrier(const FacesData &data);
+    int Barrier(const FaceFeature &feature);
 signals:
 
 public slots:

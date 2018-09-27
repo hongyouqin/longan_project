@@ -23,6 +23,8 @@ FaceFeature::FaceFeature(const FaceFeature &lh)
     this->feature_size_ = lh.feature_size_;
     this->frame_number_ = lh.frame_number_;
     this->mat_ = lh.mat_;
+    this->expiry_time_ = lh.expiry_time_;
+    this->is_employee_ = lh.is_employee_;
     std::unique_ptr<unsigned char[], deleter> temp(new unsigned char[lh.feature_size_](), auto_deleter);
     memcpy(temp.get(), lh.feature_.get(), lh.feature_size_);
     this->feature_ = std::move(temp);
@@ -41,6 +43,8 @@ FaceFeature &FaceFeature::operator=(const FaceFeature &lh)
     this->feature_size_ = lh.feature_size_;
     this->frame_number_ = lh.frame_number_;
     this->mat_ = lh.mat_;
+    this->expiry_time_ = lh.expiry_time_;
+    this->is_employee_ = lh.is_employee_;
     std::unique_ptr<unsigned char[], deleter> temp(new unsigned char[lh.feature_size_](), auto_deleter);
     memcpy(temp.get(), lh.feature_.get(), lh.feature_size_);
     this->feature_ = std::move(temp);

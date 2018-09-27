@@ -8,3 +8,8 @@ password = "shw12345"
 [data_center]
 #数据中心地址
 addr = "localhost:50001"
+
+[system]
+#常规
+face_score = 0.60
+
