@@ -1,14 +1,74 @@
 #include "airesultreport.h"
 #include <chrono>
+#include <thread>
 #include "airesult.h"
+#include "configs.h"
 #include "facefeature.h"
 #include "face_feature_library.h"
+#include "faceai.h"
 #include "logger.h"
 #include "push_redis.h"
 
 
 AiResultReport::AiResultReport(QObject *parent) : QObject(parent)
 {
+    ai_ = std::make_shared<FaceAi>();
+}
+
+void AiResultReport::PushStranger(const FaceFeature &feature, int package_serial)
+{
+    auto lib = GetFeatureLib();
+    int len = lib->GetStrangerCacheLen();
+    auto config = Configs::GetSystemConfig();
+    float ref_score = config->face_score;
+    float simil_score = 0.0f;
+    bool exist = false;
+    std::shared_ptr<FaceFeature> result = nullptr;
+
+    for (int index = 0; index < len; ++index) {
+        auto face = lib->GetStrangerCache(index);
+        simil_score = ai_->FaceComparison(face, feature);
+        if (simil_score > ref_score) {
+            exist = true;
+            result = face;
+            break;
+        }
+    }
+
+    if (!exist) {
+        // add cache
+        auto face = std::make_shared<FaceFeature>(feature);
+        face->expiry_time_ = std::chrono::system_clock::now();
+        lib->AddStrangerCache(face);
+
+        LogI("*****推送新陌生人%d", package_serial);
+
+        //推送给php
+        std::thread push_info([&](const std::string& name, const std::string& photo){
+            PushRedis redis;
+            std::time_t unix_timestamp = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+            redis.Push(name, "1", photo, unix_timestamp);
+        }, "陌生人", "http://192.168.79.206:8005/face_lib/test/15372566646368847403.jpg");
+        push_info.detach();
+    } else {
+        auto now = std::chrono::system_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(now - result->expiry_time_);
+        double c = (double)duration.count();
+        double milliseconds = c * std::chrono::milliseconds::period::num / std::chrono::milliseconds::period::den;
+        int time = static_cast<int>(milliseconds * 1000);
+        if (time > 1000*5) {
+            LogI("=====推送常见陌生人%d", package_serial);
+            //推送给php
+            std::thread push_info([&](const std::string& name, const std::string& photo){
+                PushRedis redis;
+                std::time_t unix_timestamp = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+                redis.Push(name, "1", photo, unix_timestamp);
+            }, "陌生人", "http://192.168.79.206:8005/face_lib/test/15372566646368847403.jpg");
+            push_info.detach();
+
+            result->expiry_time_ = now;
+        }
+    }
 
 }
 
@@ -43,13 +103,9 @@ void AiResultReport::RecvAiResult(const AiResult &result)
             return false;
         };
         if (!is_stranger()) {
-            //推送陌生人
-          //  LogI("frame_serial=%u, user_id=%d",result.frame_serial_, result.feature_->user_id_);
-            LogI("陌生人");
-            auto face_lib = GetFeatureLib();
-            auto feature = result.feature_;
-            feature->expiry_time_ = std::chrono::system_clock::now();
-            face_lib->AddCache(feature);
+            //陌生人处理
+            auto feature = result.feature_.get();
+            PushStranger(*feature, result.frame_serial_);
         }
 
         //删除元素
@@ -75,7 +131,10 @@ void AiResultReport::RecvEmployeeResult(const AiResult &result)
     auto face_lib = GetFeatureLib();
     face_lib->AddCache(feature);
     //推送给php
-    PushRedis redis;
-    std::time_t unix_timestamp = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-    redis.Push(result.feature_->name, "1", result.feature_->face_photo, unix_timestamp);
+    std::thread push_info([&](const std::string& name, const std::string& photo){
+        PushRedis redis;
+        std::time_t unix_timestamp = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+        redis.Push(name, "1", photo, unix_timestamp);
+    }, result.feature_->name, result.feature_->face_photo);
+    push_info.detach();
 }

@@ -26,6 +26,12 @@ public:
 
     std::shared_ptr<FaceFeature> GetCache(int index);
 
+    void AddStrangerCache(const std::shared_ptr<FaceFeature>& feature);
+
+    int GetStrangerCacheLen();
+
+    std::shared_ptr<FaceFeature> GetStrangerCache(int index);
+
     //加载注册人脸库数据
     bool LoadRegFaceLib();
 
@@ -39,13 +45,17 @@ signals:
 public slots:
 
 private:
-    std::unique_ptr<FaceQueue<std::shared_ptr<FaceFeature>>> face_cache_; //储存最近识别的人脸特征
+    std::unique_ptr<FaceQueue<std::shared_ptr<FaceFeature>>> face_cache_; //注册人脸缓存
+
+    std::unique_ptr<FaceQueue<std::shared_ptr<FaceFeature>>> stranger_face_cache_;//未注册人脸缓存
 
     std::vector<std::shared_ptr<FaceFeature>> reg_face_lib_; //注册的人脸数据库
 
     std::mutex reg_face_mutex_; //注册人脸库容器互斥量
 
     std::mutex cache_mutex_;
+
+    std::mutex sc_mutex_;//未注册人脸缓存互斥量
 };
 
 FaceFeatureLibrary* GetFeatureLib();

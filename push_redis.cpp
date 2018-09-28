@@ -32,6 +32,5 @@ bool PushRedis::Push(const std::string& user_name, const std::string& camera_id,
     freeReplyObject(reply);
 
     redisFree(conn);
-    LogI("推送成功");
     return true;
 }

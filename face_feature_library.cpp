@@ -13,6 +13,7 @@ FaceFeatureLibrary* GetFeatureLib() {
 FaceFeatureLibrary::FaceFeatureLibrary(QObject *parent) : QObject(parent)
 {
     face_cache_.reset(new FaceQueue<std::shared_ptr<FaceFeature>>(100));
+    stranger_face_cache_.reset(new FaceQueue<std::shared_ptr<FaceFeature>>(100));
 }
 
 FaceFeatureLibrary::~FaceFeatureLibrary()
@@ -34,13 +35,26 @@ int FaceFeatureLibrary::GetCacheLen()
 
 std::shared_ptr<FaceFeature> FaceFeatureLibrary::GetCache(int index)
 {
-    int len = face_cache_->Len();
-    if (index >= len) {
-        LogA("%d索引超出队列了");
-        return nullptr;
-    }
     std::lock_guard<std::mutex> lock(cache_mutex_);
     return face_cache_->GetAt(index);
+}
+
+void FaceFeatureLibrary::AddStrangerCache(const std::shared_ptr<FaceFeature> &feature)
+{
+    std::lock_guard<std::mutex> lock(sc_mutex_);
+    stranger_face_cache_->Push(feature);
+}
+
+int FaceFeatureLibrary::GetStrangerCacheLen()
+{
+    std::lock_guard<std::mutex> lock(sc_mutex_);
+    return stranger_face_cache_->Len();
+}
+
+std::shared_ptr<FaceFeature> FaceFeatureLibrary::GetStrangerCache(int index)
+{
+    std::lock_guard<std::mutex> lock(sc_mutex_);
+    return stranger_face_cache_->GetAt(index);
 }
 
 bool FaceFeatureLibrary::LoadRegFaceLib()
