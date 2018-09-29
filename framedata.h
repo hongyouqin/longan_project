@@ -29,6 +29,10 @@ public:
 
     cv::Mat GetMat() const;
 
+    int GetSerial() const;
+
+    void SetSerial(int serial);
+
 private:
     char *data_ = nullptr; //一帧数据
 
@@ -41,6 +45,8 @@ private:
     long frame_type_ = 0; //帧的类型，比如yv12类型
 
     cv::Mat mat_;
+
+    int serial_ = 0;
 };
 
 Q_DECLARE_METATYPE(FrameData);

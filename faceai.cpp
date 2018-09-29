@@ -12,7 +12,6 @@ FaceAi::FaceAi(QObject *parent) : QObject(parent)
 {
     segment_numer_.start = segment_numer_.end = 0;
 
-    face_model_ = std::make_shared<FACEMODEL>();
     fr_engine_ = std::make_shared<FaceRecognition>();
     if (fr_engine_) {
         fr_engine_->Install();
@@ -26,7 +25,7 @@ FaceAi::~FaceAi()
     }
 }
 
-bool FaceAi::ExtractFeature(const FacesData &data)
+bool FaceAi::ExtractFeature(const FacesData &data, FACEMODEL* face_model/* = nullptr*/)
 {
     ASVLOFFSCREEN inputImg = { 0 };
     inputImg.u32PixelArrayFormat = data.GetFormat();
@@ -59,10 +58,6 @@ bool FaceAi::ExtractFeature(const FacesData &data)
         return false;
     }
 
-    //提取脸部特征
-    face_model_->pbFeature = nullptr;
-    face_model_->lFeatureSize = 0;
-
     auto faces = data.GetFacesRect();
     int index = data.GetIndex();
     AFR_FSDK_FACEINPUT face_result;
@@ -71,12 +66,11 @@ bool FaceAi::ExtractFeature(const FacesData &data)
     face_result.rcFace.right = faces[index].right();
     face_result.rcFace.bottom = faces[index].bottom();
     face_result.lOrient =data.GetFaceOrient();
-    long ret = fr_engine_->ExtractFRFeature(&inputImg, &face_result, (LPAFR_FSDK_FACEMODEL)face_model_.get());
+    long ret = fr_engine_->ExtractFRFeature(&inputImg, &face_result, (LPAFR_FSDK_FACEMODEL)face_model);
     if (ret != 0) {
-        //LogE("人脸特征提取失败: %d", ret);
+        LogE("人脸特征提取失败: %d", ret);
         return false;
     }
-
 
     return true;
 }
@@ -84,13 +78,8 @@ bool FaceAi::ExtractFeature(const FacesData &data)
 float FaceAi::FaceComparison(const std::shared_ptr<FaceFeature> &feature, const FaceFeature& ref_feature)
 {
     AFR_FSDK_FACEMODEL ref_face_model;
-    if (!ref_feature.feature_) {
-        ref_face_model.pbFeature = face_model_->pbFeature;
-        ref_face_model.lFeatureSize = face_model_->lFeatureSize;
-    } else {
-        ref_face_model.pbFeature = ref_feature.feature_.get();
-        ref_face_model.lFeatureSize = ref_feature.feature_size_;
-    }
+    ref_face_model.pbFeature = ref_feature.feature_.get();
+    ref_face_model.lFeatureSize = ref_feature.feature_size_;
 
     AFR_FSDK_FACEMODEL probe_feature;
     probe_feature.pbFeature = feature->feature_.get();
@@ -108,17 +97,6 @@ float FaceAi::FaceComparison(const std::shared_ptr<FaceFeature> &feature, const 
 void FaceAi::SetSegmentNumber(const SEGMENTNUMER &segment)
 {
     segment_numer_ = segment;
-}
-
-void FaceAi::SetFaceModle(unsigned char *feature, int size)
-{
-    memcpy(face_model_->pbFeature, feature, size);
-    face_model_->lFeatureSize = size;
-}
-
-std::shared_ptr<FACEMODEL> FaceAi::GetFaceModle()
-{
-    return face_model_;
 }
 
 void FaceAi::set_serial_number(int number)

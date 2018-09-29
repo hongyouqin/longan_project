@@ -13,6 +13,8 @@ namespace common {
     //人脸识别key
     #define   FR_SDKKEY      "CpD1fuKXcZwgGTCYSRWJzV8EBXubPpYeTCU9Yt6MVyKL"
 
+    //静态人脸跟蹤
+    #define   FD_SDKKEY      "CpD1fuKXcZwgGTCYSRWJzV7rhL85NJymYPKBqhxaHCbi"
 
     //人脸跟踪内存buf大小
     extern const int kFTMemBufSize;

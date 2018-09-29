@@ -41,23 +41,8 @@ void AiResultReport::PushStranger(const FaceFeature &feature, int package_serial
         face->expiry_time_ = std::chrono::system_clock::now();
         lib->AddStrangerCache(face);
 
-        LogI("*****推送新陌生人%d", package_serial);
-
-        //推送给php
-        std::thread push_info([&](const std::string& name, const std::string& photo){
-            PushRedis redis;
-            std::time_t unix_timestamp = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-            redis.Push(name, "1", photo, unix_timestamp);
-        }, "陌生人", "http://192.168.79.206:8005/face_lib/test/15372566646368847403.jpg");
-        push_info.detach();
-    } else {
-        auto now = std::chrono::system_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(now - result->expiry_time_);
-        double c = (double)duration.count();
-        double milliseconds = c * std::chrono::milliseconds::period::num / std::chrono::milliseconds::period::den;
-        int time = static_cast<int>(milliseconds * 1000);
-        if (time > 1000*5) {
-            LogI("=====推送常见陌生人%d", package_serial);
+        if (config->is_push_stranger) {
+            LogI("*****推送新陌生人%d", package_serial);
             //推送给php
             std::thread push_info([&](const std::string& name, const std::string& photo){
                 PushRedis redis;
@@ -65,6 +50,29 @@ void AiResultReport::PushStranger(const FaceFeature &feature, int package_serial
                 redis.Push(name, "1", photo, unix_timestamp);
             }, "陌生人", "http://192.168.79.206:8005/face_lib/test/15372566646368847403.jpg");
             push_info.detach();
+        } else {
+             LogI("*****新陌生人%d", package_serial);
+        }
+    } else {
+        auto now = std::chrono::system_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(now - result->expiry_time_);
+        double c = (double)duration.count();
+        double milliseconds = c * std::chrono::milliseconds::period::num / std::chrono::milliseconds::period::den;
+        int time = static_cast<int>(milliseconds * 1000);
+        int push_time = config->stranger_push_time;
+        if (time > push_time) {
+            if (config->is_push_stranger) {
+                LogI("=====推送常见陌生人%d,相识分数：%f, time=%d", package_serial, simil_score, time);
+    //            //推送给php
+                std::thread push_info([&](const std::string& name, const std::string& photo){
+                    PushRedis redis;
+                    std::time_t unix_timestamp = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+                    redis.Push(name, "1", photo, unix_timestamp);
+                }, "陌生人", "http://192.168.79.206:8005/face_lib/test/15372566646368847403.jpg");
+                push_info.detach();
+            } else {
+                 LogI("=====识别过的陌生人%d,相识分数：%f", package_serial, simil_score);
+            }
 
             result->expiry_time_ = now;
         }

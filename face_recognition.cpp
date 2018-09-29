@@ -30,9 +30,12 @@ bool FaceRecognition::Install() {
 }
 
 bool FaceRecognition::UnInstall() {
-    if (fr_engine_) {
-        AFR_FSDK_UninitialEngine(fr_engine_);
-        fr_engine_ = nullptr;
+    {
+        std::lock_guard<std::mutex> lock(mtx_);
+        if (fr_engine_) {
+            AFR_FSDK_UninitialEngine(fr_engine_);
+            fr_engine_ = nullptr;
+        }
     }
 
     if (fr_work_memory_) {

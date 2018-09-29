@@ -5,6 +5,11 @@ port = 8000
 user = "admin"
 password = "shw12345"
 
+[redis]
+ip = "192.168.79.206"
+port = 6379
+auth = "123456"
+
 [data_center]
 #数据中心地址
 addr = "localhost:50001"
@@ -12,4 +17,25 @@ addr = "localhost:50001"
 [system]
 #常规
 face_score = 0.60
+
+#是否显示摄像机,1为显示，其他值为不显示
+show_camera = 1
+
+#人脸处理线程数，这个参数只有当show_camera不为1时起作用
+face_process_num = 8
+
+#陌生人推送时间，单位是毫秒
+stranger_push_time = 12000
+
+#是否推送陌生人,为1表示推送，其他值不推送
+is_push_stranger = 1
+
+#注册员工推送时间，单位是毫秒
+employee_push_time = 12000
+
+
+
+
+
+
 

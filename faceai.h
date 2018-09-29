@@ -36,15 +36,11 @@ public:
 
     ~FaceAi();
 
-    bool ExtractFeature(const FacesData& data); //人脸提取
+    bool ExtractFeature(const FacesData& data, FACEMODEL* face_model = nullptr); //人脸提取
 
     float FaceComparison(const std::shared_ptr<FaceFeature>& feature, const FaceFeature& ref_feature); //人脸比对
 
     void SetSegmentNumber(const SEGMENTNUMER& segment);
-
-    void SetFaceModle(unsigned char* feature, int size);
-
-    std::shared_ptr<FACEMODEL> GetFaceModle();
 
     void set_serial_number(int number);
 
@@ -67,8 +63,6 @@ public slots:
     void RecvStorageData(const FaceFeature& face);
 private:
     std::shared_ptr<FaceRecognition> fr_engine_ = nullptr;
-
-    std::shared_ptr<FACEMODEL> face_model_ = nullptr;
 
     std::atomic_int serial_number_ = {-1}; //FaceAi对象序列号，不能重复
 

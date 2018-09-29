@@ -24,6 +24,7 @@ FrameData::FrameData(const FrameData &lh)
     this->frame_type_ = lh.frame_type_;
     this->data_size_ = lh.data_size_;
     this->mat_ = lh.mat_;
+    this->serial_ = lh.serial_;
 }
 
 FrameData &FrameData::operator=(const FrameData &lh)
@@ -39,6 +40,7 @@ FrameData &FrameData::operator=(const FrameData &lh)
     this->frame_type_ = lh.frame_type_;
     this->data_size_ = lh.data_size_;
     this->mat_ = lh.mat_;
+    this->serial_ = lh.serial_;
     return *this;
 }
 
@@ -88,4 +90,14 @@ long FrameData::Type() const
 cv::Mat FrameData::GetMat() const
 {
     return mat_;
+}
+
+int FrameData::GetSerial() const
+{
+    return serial_;
+}
+
+void FrameData::SetSerial(int serial)
+{
+    serial_ = serial;
 }

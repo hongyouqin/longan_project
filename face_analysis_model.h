@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <memory>
+#include <atomic>
 
 class FaceAi;
 class FacesData;
@@ -22,6 +23,8 @@ public:
 
      unsigned long GetFrameSerial();
 
+     void Analys(const FacesData &data);
+
 signals:
 public slots:
     void RecvDetectedData(const FacesData& data);
@@ -30,7 +33,7 @@ private:
 
     std::shared_ptr<FaceAi> face_ai_ = {nullptr};//专门用于提取人脸特征
 
-    unsigned long frame_serial_ = 0;//帧序列号
+    std::atomic_ulong  frame_serial_ = {0};//帧序列号
 };
 
 #endif // FACE_ANALYSIS_MODEL_H

@@ -23,7 +23,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 unix {
-    LIBS += -L../longan/lib/ -Wl,-rpath=./:./HCNetSDKCom:../longan/lib -lhcnetsdk -lPlayCtrl -lAudioRender -lSuperRender -larcsoft_fsdk_face_tracking -larcsoft_fsdk_face_recognition
+    LIBS += -L../longan/lib/ -Wl,-rpath=./:./HCNetSDKCom:../longan/lib -lhcnetsdk -lPlayCtrl -lAudioRender -lSuperRender \
+            -larcsoft_fsdk_face_tracking -larcsoft_fsdk_face_recognition -larcsoft_fsdk_face_detection
 
     LIBS += -L/usr/local/lib/ -lopencv_highgui -lopencv_core -lopencv_imgproc -lopencv_imgcodecs
 
@@ -76,7 +77,8 @@ SOURCES += \
     aithreadsmanage.cpp \
     airesultreport.cpp \
     airesult.cpp \
-    push_redis.cpp
+    push_redis.cpp \
+    face_detection.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -118,7 +120,9 @@ HEADERS += \
     aithreadsmanage.h \
     airesultreport.h \
     airesult.h \
-    push_redis.h
+    push_redis.h \
+    face_detection.h \
+    arc_face/arcsoft_fsdk_face_detection.h
 
 FORMS += \
         mainwindow.ui

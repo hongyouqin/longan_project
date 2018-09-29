@@ -34,8 +34,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {  
-    disconnect(this, SIGNAL(frame_push_signal(FrameData&)), face_process_.get(), SLOT(CameraFrame(FrameData&)));
-    face_process_.reset();
+    auto system = Configs::GetSystemConfig();
+    if (system->show_camera == 1) {
+        disconnect(this, SIGNAL(frame_push_signal(FrameData&)), face_process_.get(), SLOT(CameraFrame(FrameData&)));
+        face_process_.reset();
+    }
 
     if (camera_) {
         camera_->UnInitCarema();
@@ -70,13 +73,18 @@ void MainWindow::Initialize()
     int h = ui->camera->geometry().height();
     camera_ctrl_->setFixedSize(w,h);
 
-    face_process_ = std::make_shared<FaceProcess>();
-    QThread *face_thread = new QThread();
-    face_process_->moveToThread(face_thread);
-    connect(this, SIGNAL(frame_push_signal(FrameData&)), face_process_.get(), SLOT(CameraFrame(FrameData&)));
-    connect(face_process_.get(), SIGNAL(faces_detected_signal(const FacesData&)), camera_ctrl_.get(), SLOT(RecvDetectedFaces(const FacesData&)));
-    connect(face_thread, SIGNAL(finished()), face_thread, SLOT(deleteLater()));
-    face_thread->start();
+    auto system = Configs::GetSystemConfig();
+    if (system->show_camera == 1) {
+        face_process_ = std::make_shared<FaceProcess>();
+        QThread *face_thread = new QThread();
+        face_process_->moveToThread(face_thread);
+        connect(this, SIGNAL(frame_push_signal(FrameData&)), face_process_.get(), SLOT(CameraFrame(FrameData&)));
+        connect(face_process_.get(), SIGNAL(faces_detected_signal(const FacesData&)), camera_ctrl_.get(), SLOT(RecvDetectedFaces(const FacesData&)));
+        connect(face_thread, SIGNAL(finished()), face_thread, SLOT(deleteLater()));
+        face_thread->start();
+    } else {
+        CreateFaceMultiProcess();
+    }
 
     //开启摄像头
     HWND hwnd = (HWND)winId();
@@ -89,23 +97,51 @@ void MainWindow::SendCarameSignal(FrameData &data)
     emit carame_signal(data);
 }
 
+void MainWindow::CreateFaceMultiProcess()
+{
+    auto system = Configs::GetSystemConfig();
+    for (int index = 0; index < system->face_process_num; ++index) {
+        std::shared_ptr<FaceProcess> process = std::make_shared<FaceProcess>();
+        process->set_serial_number(index+1);
+        QThread *face_thread = new QThread();
+        process->moveToThread(face_thread);
+        connect(this, SIGNAL(frame_push_signal(FrameData&)), process.get(), SLOT(CameraFrame(FrameData&)));
+        connect(face_thread, SIGNAL(finished()), face_thread, SLOT(deleteLater()));
+        faces_analyze_map_[index+1] = process;
+        face_thread->start();
+    }
+}
+
+int MainWindow::LotNumber()
+{
+    number_++;
+    int count = static_cast<int>(faces_analyze_map_.size());
+    if (number_ > count) {
+        number_ = 0;
+    }
+    return number_;
+}
+
 bool MainWindow::event(QEvent *event)
 {
     if (event->type() == camera_flow_event) {
         CameraFLowEvent *flow_event = static_cast<CameraFLowEvent*>(event);
         if (nullptr != flow_event) {
-           // PrintExecTime time;
-            //视频显示
-            cv::Mat cvImg = flow_event->GetShowMat();
-            QImage image =QImage((const unsigned char*)(cvImg.data),
-                                 cvImg.cols, cvImg.rows,
-                                 cvImg.cols*cvImg.channels(),
-                                 QImage::Format_RGB888);
-            ui->camera->setPixmap(QPixmap::fromImage(image));
-            this->update();
-
+           auto system = Configs::GetSystemConfig();
+           if (system->show_camera == 1) {
+               //视频显示
+               cv::Mat cvImg = flow_event->GetShowMat();
+               QImage image =QImage((const unsigned char*)(cvImg.data),
+                                    cvImg.cols, cvImg.rows,
+                                    cvImg.cols*cvImg.channels(),
+                                    QImage::Format_RGB888);
+               ui->camera->setPixmap(QPixmap::fromImage(image));
+               this->update();
+           }
             //视频流推送到人脸引擎处理
             FrameData data;
+            int number = LotNumber();
+            data.SetSerial(number);
             data.SetMat(flow_event->GetFaceMat());
             emit frame_push_signal(data);
         }

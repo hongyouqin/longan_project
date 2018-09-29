@@ -27,6 +27,25 @@ struct DataCenterConfig {
 //系统配置
 struct SystemConfig {
     float face_score;
+
+    int show_camera;
+
+    int face_process_num;
+
+    int stranger_push_time;
+
+    int is_push_stranger;
+
+    int employee_push_time;
+};
+
+//redis服务器配置
+struct RedisConfig {
+    std::string ip;
+
+    int port;
+
+    std::string auth;
 };
 
 class Configs
@@ -41,6 +60,8 @@ public:
     static DataCenterConfig* GetDataCenterConfig();
 
     static SystemConfig* GetSystemConfig();
+
+    static RedisConfig* GetRedisConfig();
 private:
     static std::shared_ptr<cpptoml::table> tables_;
 
@@ -49,6 +70,8 @@ private:
     static DataCenterConfig dc_config_;
 
     static SystemConfig system_config_;
+
+    static RedisConfig redis_config_;
 };
 
 #endif // CONFIGS_H

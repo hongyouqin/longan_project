@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <memory>
+#include <map>
 
 namespace Ui {
 class MainWindow;
@@ -25,6 +26,12 @@ public:
     void Initialize();
 
     void SendCarameSignal(FrameData& data);
+
+    //创建多个线程处理人脸
+    void CreateFaceMultiProcess();
+
+    //摇号
+    int LotNumber();
 signals:
     void carame_signal(FrameData& data);
 
@@ -43,6 +50,10 @@ private:
     std::shared_ptr<FrameDataProcess> frame_data_process_ = nullptr;
 
     std::shared_ptr<FaceProcess> face_process_ = nullptr;
+
+    std::map<int, std::shared_ptr<FaceProcess>> faces_analyze_map_;
+
+    int number_ = 0; //号码，不是线程安全的
 };
 
 MainWindow* GetMainWindow();

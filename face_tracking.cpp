@@ -33,9 +33,12 @@ bool FaceTracking::Install() {
 
 bool FaceTracking::UnInstall() {
     //卸载ft engine
-    if (ft_engine_) {
-        AFT_FSDK_UninitialFaceEngine(ft_engine_);
-        ft_engine_ = nullptr;
+    {
+        std::lock_guard<std::mutex> lock(mtx_);
+        if (ft_engine_) {
+            AFT_FSDK_UninitialFaceEngine(ft_engine_);
+            ft_engine_ = nullptr;
+        }
     }
 
     if (ft_work_memory_) {

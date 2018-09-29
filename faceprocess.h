@@ -19,6 +19,9 @@ public:
 
     std::vector<QRect> Frame(unsigned char *frame_data,int frame_width,int frame_height, unsigned	int input_image_format);
 
+    void set_serial_number(int serial);
+
+    int serial_number() const;
 signals:
     void faces_detected_signal(const FacesData& data); //人脸跟踪信号
 public slots:
@@ -30,6 +33,8 @@ private:
     std::shared_ptr<FaceAnalysisModel> face_analysis_;
 
     int face_orient_ = 0;
+
+    int serial_number_ = 0;
 };
 
 #endif // FACEPROCESS_H

@@ -88,8 +88,21 @@ std::vector<QRect> FaceProcess::Frame(unsigned char *frame_data, int frame_width
     return std::move(temp_rects);
 }
 
+void FaceProcess::set_serial_number(int serial)
+{
+    serial_number_ = serial;
+}
+
+int FaceProcess::serial_number() const
+{
+    return serial_number_;
+}
+
 void FaceProcess::CameraFrame(FrameData &frame)
 {
+    if (frame.GetSerial() != serial_number_) {
+        return;
+    }
     cv::Mat mat = frame.GetMat();
     int w = mat.cols;
     int h = mat.rows;

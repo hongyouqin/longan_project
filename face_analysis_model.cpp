@@ -1,4 +1,5 @@
 #include "face_analysis_model.h"
+#include <thread>
 #include "aithreadsmanage.h"
 #include "faceai.h"
 #include "facesdata.h"
@@ -20,7 +21,7 @@ FaceAnalysisModel::~FaceAnalysisModel()
 
 bool FaceAnalysisModel::Init()
 {
-    face_filter_.reset(new FaceFilterBarrier());
+    face_filter_ = std::make_shared<FaceFilterBarrier>();
 
     face_ai_.reset(new FaceAi());
 
@@ -47,6 +48,29 @@ unsigned long FaceAnalysisModel::GetFrameSerial()
     return frame_serial_;
 }
 
+void FaceAnalysisModel::Analys(const FacesData &data)
+{
+    FACEMODEL face_model;
+    if (!face_ai_->ExtractFeature(data, &face_model)) {
+        return;
+    }
+
+    FaceFeature face_feature;
+    std::unique_ptr<unsigned char[], deleter> feature(new unsigned char[face_model.lFeatureSize](), auto_deleter);
+    memcpy(feature.get(), face_model.pbFeature, face_model.lFeatureSize);
+    face_feature.feature_ = std::move(feature);
+    face_feature.feature_size_ = face_model.lFeatureSize;
+    face_feature.frame_number_ = GetFrameSerial();//GetFrameSerial函数不是线程安全的
+    face_feature.mat_ = data.GetMat();
+
+    //人脸缓存队列，同一人被频繁识别
+    if (1 == face_filter_->Barrier(face_feature)) {
+        //人脸找到
+        return;
+    }
+    GetAiManageObj()->SendFaceFeatureSignal(face_feature);
+}
+
 void FaceAnalysisModel::RecvDetectedData(const FacesData &data)
 {
    // PrintExecTime time;
@@ -55,25 +79,7 @@ void FaceAnalysisModel::RecvDetectedData(const FacesData &data)
     std::vector<QRect> faces = data.GetFacesRect();
     for (auto iter = faces.cbegin(); iter != faces.end(); ++iter, index++) {
         face_data.SetIndex(index);
-        if (!face_ai_->ExtractFeature(face_data)) {
-            continue;
-        }
-
-        auto face = face_ai_->GetFaceModle();
-        FaceFeature face_feature;
-        std::unique_ptr<unsigned char[], deleter> feature(new unsigned char[face->lFeatureSize](), auto_deleter);
-        memcpy(feature.get(), face->pbFeature, face->lFeatureSize);
-        face_feature.feature_ = std::move(feature);
-        face_feature.feature_size_ = face->lFeatureSize;
-        face_feature.frame_number_ = GetFrameSerial();//GetFrameSerial函数不是线程安全的
-        face_feature.mat_ = face_data.GetMat();
-
-        //人脸缓存队列，同一人被频繁识别
-        if (1 == face_filter_->Barrier(face_feature)) {
-            //人脸找到
-            continue;
-        }
-        GetAiManageObj()->SendFaceFeatureSignal(face_feature);
-
+        std::thread analys(&FaceAnalysisModel::Analys, this, face_data);
+        analys.detach();
     }
 }
