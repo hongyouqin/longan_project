@@ -1,6 +1,8 @@
 #include "faceprocess.h"
 #include <QThread>
+#include <thread>
 #include "facesdata.h"
+#include "face_detection.h"
 #include "face_analysis_model.h"
 #include "framedata.h"
 #include "face_tracking.h"
@@ -9,8 +11,11 @@
 
 FaceProcess::FaceProcess(QObject *parent) : QObject(parent)
 {
-    ft_engine_.reset(new FaceTracking());
-    ft_engine_->Install();
+   // ft_engine_.reset(new FaceTracking());
+   // ft_engine_->Install();
+
+    fd_engine_.reset(new FaceDetection());
+    fd_engine_->Install();
 
     face_analysis_ = std::make_shared<FaceAnalysisModel>();
     face_analysis_->Init();
@@ -29,6 +34,10 @@ FaceProcess::~FaceProcess()
 
     if (ft_engine_) {
         ft_engine_->UnInstall();
+    }
+
+    if (fd_engine_) {
+        fd_engine_->UnInstall();
     }
 }
 
@@ -67,10 +76,17 @@ std::vector<QRect> FaceProcess::Frame(unsigned char *frame_data, int frame_width
         return std::move(temp_rects);;
     }
     //检测人脸处理
-    LPAFT_FSDK_FACERES face_reult = nullptr;
-    long ret = ft_engine_->FaceFeatureDetect(&inputImg, &face_reult);
+//    LPAFT_FSDK_FACERES face_reult = nullptr;
+//    long ret = ft_engine_->FaceFeatureDetect(&inputImg, &face_reult);
+//    if (ret != 0) {
+//        LogE("fail to AFT_FSDK_FaceFeatureDetect()返回值: %d", ret);
+//        return std::move(temp_rects);;
+//    }
+
+    LPAFD_FSDK_FACERES face_reult = nullptr;
+    long ret = fd_engine_->StillImageFaceDetection(&inputImg, &face_reult);
     if (ret != 0) {
-        LogE("fail to AFT_FSDK_FaceFeatureDetect()返回值: %d", ret);
+        LogE("fail to StillImageFaceDetection返回值: %d", ret);
         return std::move(temp_rects);;
     }
 
@@ -83,7 +99,7 @@ std::vector<QRect> FaceProcess::Frame(unsigned char *frame_data, int frame_width
       temp_rects.push_back(rect);
     }
 
-    face_orient_ = face_reult->lfaceOrient;
+    face_orient_ = *face_reult->lfaceOrient;
 
     return std::move(temp_rects);
 }
@@ -98,24 +114,33 @@ int FaceProcess::serial_number() const
     return serial_number_;
 }
 
+void FaceProcess::SendDetectedSignal()
+{
+
+}
+
 void FaceProcess::CameraFrame(FrameData &frame)
 {
-    if (frame.GetSerial() != serial_number_) {
-        return;
-    }
-    cv::Mat mat = frame.GetMat();
-    int w = mat.cols;
-    int h = mat.rows;
-    std::vector<QRect> result =  Frame(mat.data, w, h, ASVL_PAF_RGB24_B8G8R8);
-    if (!result.empty()) {
-        //发送检测到的人脸信息
-        FacesData data;
-        data.SetFacesRect(std::move(result));
-        data.SetFrameWidth(w);
-        data.SetFrameHeight(h);
-        data.SetFormat(ASVL_PAF_RGB24_B8G8R8);
-        data.SetMat(mat);
-        data.SetFaceOrient(face_orient_);
-        emit faces_detected_signal(data);
-    }
+
+    std::thread process([&](FaceProcess *obj, const FrameData& frame) {
+        cv::Mat mat = frame.GetMat();
+        int w = mat.cols;
+        int h = mat.rows;
+        std::vector<QRect> result =  Frame(mat.data, w, h, ASVL_PAF_RGB24_B8G8R8);
+        if (!result.empty()) {
+            //发送检测到的人脸信息
+            FacesData data;
+            data.SetFrameTime(frame.FrameTime());
+            data.SetFacesRect(std::move(result));
+            data.SetFrameWidth(w);
+            data.SetFrameHeight(h);
+            data.SetFormat(ASVL_PAF_RGB24_B8G8R8);
+            data.SetMat(mat);
+            data.SetFaceOrient(face_orient_);
+            emit faces_detected_signal(data);
+        }
+    }, this, frame);
+
+    process.detach();
+
 }

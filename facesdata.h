@@ -2,6 +2,7 @@
 #define FACESDATA_H
 
 #include <vector>
+#include <chrono>
 #include <QRect>
 #include <QMetaType>
 #include <cv.h>
@@ -39,6 +40,10 @@ public:
     void SetIndex(int index);
 
     int GetIndex() const;
+
+    void SetFrameTime(std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> time);
+
+    std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> FrameTime() const;
 private:
     std::vector<QRect> rect_faces_; //检测到的人脸数据
 
@@ -53,6 +58,8 @@ private:
     int face_orient_ = 0;
 
     cv::Mat mat_;
+
+    std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> frame_time_;
 };
 Q_DECLARE_METATYPE(FacesData);
 

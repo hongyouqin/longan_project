@@ -5,9 +5,10 @@
 #include "faceai.h"
 #include "facefeature.h"
 #include "face_feature_library.h"
+#include "logger.h"
 
 namespace {
-    const int kBaseNum = 100; //分配的基数
+    const int kBaseNum = 90; //分配的基数
 }
 
 AiThreadsManage* GetAiManageObj() {
@@ -36,6 +37,9 @@ void AiThreadsManage::AllocateThreads()
     if (allocate_thread_number == 0) {
         allocate_thread_number = 1;
     }
+
+    LogI("生成%d个Ai处理线程数", allocate_thread_number);
+
     for (int index = 0; index < allocate_thread_number; ++index) {
         std::shared_ptr<FaceAi> ai= std::make_shared<FaceAi>();
         ai->set_serial_number(1000 + index);

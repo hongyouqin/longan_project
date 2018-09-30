@@ -30,8 +30,6 @@ struct SystemConfig {
 
     int show_camera;
 
-    int face_process_num;
-
     int stranger_push_time;
 
     int is_push_stranger;

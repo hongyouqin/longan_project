@@ -30,6 +30,8 @@ struct FaceFeature {
 
     std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> expiry_time_;//人脸特征有效时间
 
+    std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> frame_time_;//摄像头每一帧的时间
+
     bool is_employee_ = false; //是否注册人员
 
     cv::Mat mat_;
@@ -39,6 +41,10 @@ struct FaceFeature {
     FaceFeature(const FaceFeature& lh);
 
     FaceFeature& operator=(const FaceFeature& lh);
+
+    FaceFeature(FaceFeature&& lh);
+
+    FaceFeature& operator=(FaceFeature&& lh);
 };
 Q_DECLARE_METATYPE(FaceFeature);
 

@@ -3,6 +3,7 @@
 
 #include <QEvent>
 #include <memory>
+#include <chrono>
 #include <cv.h>
 #include <opencv/highgui.h>
 #include <opencv.hpp>
@@ -27,6 +28,9 @@ public:
     void SetFaceMat(const cv::Mat& mat);
 
     cv::Mat GetFaceMat() const;
+
+    std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> frame_time_; //帧时间
+
 private:
     std::shared_ptr<FrameData> frame_ = nullptr;
 

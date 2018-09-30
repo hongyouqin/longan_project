@@ -12,5 +12,5 @@ PrintExecTime::~PrintExecTime()
     auto end = std::chrono::system_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start_);
     double elapsed = double(duration.count()) * std::chrono::microseconds::period::num / std::chrono::microseconds::period::den;
-    LogI("%s处理花费的时间: %f秒", tag_.c_str(), elapsed);
+    LogI("%s处理花费的时间: %f微秒", tag_.c_str(), elapsed);
 }

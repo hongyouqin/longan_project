@@ -30,7 +30,7 @@ std::unique_ptr< LonganDataCenter::Stub> LonganDataCenter::NewStub(const std::sh
 LonganDataCenter::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel)
   : channel_(channel), rpcmethod_StorageEmployeeFace_(LonganDataCenter_method_names[0], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_StorageStrangerFace_(LonganDataCenter_method_names[1], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_ExtractFaceRegTableDatas_(LonganDataCenter_method_names[2], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_ExtractFaceRegTableDatas_(LonganDataCenter_method_names[2], ::grpc::internal::RpcMethod::SERVER_STREAMING, channel)
   {}
 
 ::grpc::Status LonganDataCenter::Stub::StorageEmployeeFace(::grpc::ClientContext* context, const ::proto::UserParam& request, ::proto::StorageReply* response) {
@@ -57,16 +57,16 @@ LonganDataCenter::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& c
   return ::grpc::internal::ClientAsyncResponseReaderFactory< ::proto::StorageReply>::Create(channel_.get(), cq, rpcmethod_StorageStrangerFace_, context, request, false);
 }
 
-::grpc::Status LonganDataCenter::Stub::ExtractFaceRegTableDatas(::grpc::ClientContext* context, const ::proto::ExtractFaceParam& request, ::proto::StorageReply* response) {
-  return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_ExtractFaceRegTableDatas_, context, request, response);
+::grpc::ClientReader< ::proto::Feature>* LonganDataCenter::Stub::ExtractFaceRegTableDatasRaw(::grpc::ClientContext* context, const ::proto::Empty& request) {
+  return ::grpc::internal::ClientReaderFactory< ::proto::Feature>::Create(channel_.get(), rpcmethod_ExtractFaceRegTableDatas_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::proto::StorageReply>* LonganDataCenter::Stub::AsyncExtractFaceRegTableDatasRaw(::grpc::ClientContext* context, const ::proto::ExtractFaceParam& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::proto::StorageReply>::Create(channel_.get(), cq, rpcmethod_ExtractFaceRegTableDatas_, context, request, true);
+::grpc::ClientAsyncReader< ::proto::Feature>* LonganDataCenter::Stub::AsyncExtractFaceRegTableDatasRaw(::grpc::ClientContext* context, const ::proto::Empty& request, ::grpc::CompletionQueue* cq, void* tag) {
+  return ::grpc::internal::ClientAsyncReaderFactory< ::proto::Feature>::Create(channel_.get(), cq, rpcmethod_ExtractFaceRegTableDatas_, context, request, true, tag);
 }
 
-::grpc::ClientAsyncResponseReader< ::proto::StorageReply>* LonganDataCenter::Stub::PrepareAsyncExtractFaceRegTableDatasRaw(::grpc::ClientContext* context, const ::proto::ExtractFaceParam& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::proto::StorageReply>::Create(channel_.get(), cq, rpcmethod_ExtractFaceRegTableDatas_, context, request, false);
+::grpc::ClientAsyncReader< ::proto::Feature>* LonganDataCenter::Stub::PrepareAsyncExtractFaceRegTableDatasRaw(::grpc::ClientContext* context, const ::proto::Empty& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncReaderFactory< ::proto::Feature>::Create(channel_.get(), cq, rpcmethod_ExtractFaceRegTableDatas_, context, request, false, nullptr);
 }
 
 LonganDataCenter::Service::Service() {
@@ -82,8 +82,8 @@ LonganDataCenter::Service::Service() {
           std::mem_fn(&LonganDataCenter::Service::StorageStrangerFace), this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       LonganDataCenter_method_names[2],
-      ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< LonganDataCenter::Service, ::proto::ExtractFaceParam, ::proto::StorageReply>(
+      ::grpc::internal::RpcMethod::SERVER_STREAMING,
+      new ::grpc::internal::ServerStreamingHandler< LonganDataCenter::Service, ::proto::Empty, ::proto::Feature>(
           std::mem_fn(&LonganDataCenter::Service::ExtractFaceRegTableDatas), this)));
 }
 
@@ -104,10 +104,10 @@ LonganDataCenter::Service::~Service() {
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status LonganDataCenter::Service::ExtractFaceRegTableDatas(::grpc::ServerContext* context, const ::proto::ExtractFaceParam* request, ::proto::StorageReply* response) {
+::grpc::Status LonganDataCenter::Service::ExtractFaceRegTableDatas(::grpc::ServerContext* context, const ::proto::Empty* request, ::grpc::ServerWriter< ::proto::Feature>* writer) {
   (void) context;
   (void) request;
-  (void) response;
+  (void) writer;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 

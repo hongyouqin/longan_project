@@ -74,3 +74,13 @@ int FacesData::GetIndex() const
 {
     return index_;
 }
+
+void FacesData::SetFrameTime(std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> time)
+{
+    frame_time_ = time;
+}
+
+std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> FacesData::FrameTime() const
+{
+    return frame_time_;
+}

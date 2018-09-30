@@ -1,6 +1,7 @@
 #include "face_detection.h"
 #include "commondefine.h"
 #include "logger.h"
+#include "printexectime.h"
 
 FaceDetection::FaceDetection()
 {
@@ -20,7 +21,7 @@ bool FaceDetection::Install()
     }
 
     int ret = AFD_FSDK_InitialFaceEngine((MPChar)APPID, (MPChar)FD_SDKKEY, ft_work_memory_,  common::kFTMemBufSize,
-                                         &fd_engine_, AFD_FSDK_OPF_0_HIGHER_EXT, 16, common::kMaxFaceNum);
+                                         &fd_engine_, AFD_FSDK_OPF_0_HIGHER_EXT, 24, common::kMaxFaceNum);
     if (ret != 0) {
         LogE("AFT_FSDK_InitialFaceEngine fail code: %d", ret);
         return false;

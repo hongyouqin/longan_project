@@ -14,12 +14,17 @@ service LonganDataCenter {
     rpc StorageStrangerFace(UserParam) returns(StorageReply) {}
 
     //拉取人脸注册表的所有数据
-    rpc ExtractFaceRegTableDatas(ExtractFaceParam) returns(StorageReply) {}
+    rpc ExtractFaceRegTableDatas(Empty) returns(stream Feature) {}
 }
 
 //拉取人脸参数
-message ExtractFaceParam {
-    uint32 count = 1; //拉取人脸个数，这个参数暂时没有用，不传
+message Empty {
+    //空
+}
+
+//人脸特征
+message Feature {
+    UserParam face = 1;
 }
 
 //用户参数
@@ -43,6 +48,4 @@ message UserParam {
 //储存结果
 message StorageReply {
     bool is_success = 1;
-
-    repeated UserParam face_reg_tables = 2; //人脸注册表数据
 }

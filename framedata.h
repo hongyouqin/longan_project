@@ -3,6 +3,7 @@
 
 #include <QMetaType>
 #include <cv.h>
+#include <chrono>
 
 class FrameData
 {
@@ -33,6 +34,10 @@ public:
 
     void SetSerial(int serial);
 
+    void SetFrameTime(std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> time);
+
+    std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> FrameTime() const;
+
 private:
     char *data_ = nullptr; //一帧数据
 
@@ -47,6 +52,8 @@ private:
     cv::Mat mat_;
 
     int serial_ = 0;
+
+    std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> frame_time_;
 };
 
 Q_DECLARE_METATYPE(FrameData);

@@ -16,6 +16,7 @@ signals:
 
 public slots:
     void RecvCameraData(FrameData& data);
+
 };
 
 #endif // FRAMEDATAPROCESS_H

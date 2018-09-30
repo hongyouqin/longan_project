@@ -1,5 +1,6 @@
 #include "facefilterbarrier.h"
 #include <chrono>
+#include <iomanip>
 #include <thread>
 #include "configs.h"
 #include "faceai.h"
@@ -43,7 +44,7 @@ int FaceFilterBarrier::Barrier(const FaceFeature &feature)
     }
 
     if (is_recognition) {
-        auto now = std::chrono::system_clock::now();
+        auto now = feature.frame_time_;
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(now - result->expiry_time_);
         double c = (double)duration.count();
         double milliseconds = c * std::chrono::milliseconds::period::num / std::chrono::milliseconds::period::den;
@@ -51,7 +52,10 @@ int FaceFilterBarrier::Barrier(const FaceFeature &feature)
         int push_time = config->employee_push_time;
         if (time > push_time) {
             //LogI("缓存里有目前有：%d条数据", len);
-            LogI("员工 name=%s； time=%d; face_photo=%s; 识别分数:%f", result->name.c_str(), time, result->face_photo.c_str(), simil_score);
+            std::time_t frame_time = std::chrono::system_clock::to_time_t(now);
+            std::stringstream ss;
+            ss << std::put_time(std::localtime(&frame_time), "%F %T");
+            LogI("员工 name=%s； frame_time=%s; face_photo=%s; 识别分数:%f", result->name.c_str(), ss.str().c_str(), result->face_photo.c_str(), simil_score);
             //推送给php
             std::thread push_info([&](const std::string& name, const std::string& photo){
                 PushRedis redis;
@@ -60,6 +64,15 @@ int FaceFilterBarrier::Barrier(const FaceFeature &feature)
             },result->name, result->face_photo);
             push_info.detach();
             result->expiry_time_ = now;
+        } else {
+            std::time_t frame_time = std::chrono::system_clock::to_time_t(now);
+            std::stringstream ss;
+            ss << std::put_time(std::localtime(&frame_time), "%F %T");
+            std::time_t exprity_time = std::chrono::system_clock::to_time_t(result->expiry_time_);
+            std::stringstream ss2;
+            ss2 << std::put_time(std::localtime(&exprity_time), "%F %T");
+
+            LogI("name=%s员工已被识别过, 上一次识别时间是：%s, frame_time=%s，face_photo=%s，识别分数:%f", result->name.c_str(),ss2.str().c_str(), ss.str().c_str(), result->face_photo.c_str(), simil_score);
         }
         return 1;
     }

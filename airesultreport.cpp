@@ -20,6 +20,12 @@ void AiResultReport::PushStranger(const FaceFeature &feature, int package_serial
     auto lib = GetFeatureLib();
     int len = lib->GetStrangerCacheLen();
     auto config = Configs::GetSystemConfig();
+    if (config->is_push_stranger != 1) {
+        LogI("*****陌生人%d", package_serial);
+        return;
+    }
+
+
     float ref_score = config->face_score;
     float simil_score = 0.0f;
     bool exist = false;
@@ -41,8 +47,23 @@ void AiResultReport::PushStranger(const FaceFeature &feature, int package_serial
         face->expiry_time_ = std::chrono::system_clock::now();
         lib->AddStrangerCache(face);
 
-        if (config->is_push_stranger) {
-            LogI("*****推送新陌生人%d", package_serial);
+        LogI("*****推送新陌生人%d", package_serial);
+        //推送给php
+        std::thread push_info([&](const std::string& name, const std::string& photo){
+            PushRedis redis;
+            std::time_t unix_timestamp = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+            redis.Push(name, "1", photo, unix_timestamp);
+        }, "陌生人", "http://192.168.79.206:8005/face_lib/test/15372566646368847403.jpg");
+        push_info.detach();
+    } else {
+        auto now = feature.frame_time_;
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(now - result->expiry_time_);
+        double c = (double)duration.count();
+        double milliseconds = c * std::chrono::milliseconds::period::num / std::chrono::milliseconds::period::den;
+        int time = static_cast<int>(milliseconds * 1000);
+        int push_time = config->stranger_push_time;
+        if (time > push_time) {
+            LogI("=====推送常见陌生人%d,相识分数：%f, time=%d", package_serial, simil_score, time);
             //推送给php
             std::thread push_info([&](const std::string& name, const std::string& photo){
                 PushRedis redis;
@@ -50,29 +71,6 @@ void AiResultReport::PushStranger(const FaceFeature &feature, int package_serial
                 redis.Push(name, "1", photo, unix_timestamp);
             }, "陌生人", "http://192.168.79.206:8005/face_lib/test/15372566646368847403.jpg");
             push_info.detach();
-        } else {
-             LogI("*****新陌生人%d", package_serial);
-        }
-    } else {
-        auto now = std::chrono::system_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(now - result->expiry_time_);
-        double c = (double)duration.count();
-        double milliseconds = c * std::chrono::milliseconds::period::num / std::chrono::milliseconds::period::den;
-        int time = static_cast<int>(milliseconds * 1000);
-        int push_time = config->stranger_push_time;
-        if (time > push_time) {
-            if (config->is_push_stranger) {
-                LogI("=====推送常见陌生人%d,相识分数：%f, time=%d", package_serial, simil_score, time);
-    //            //推送给php
-                std::thread push_info([&](const std::string& name, const std::string& photo){
-                    PushRedis redis;
-                    std::time_t unix_timestamp = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-                    redis.Push(name, "1", photo, unix_timestamp);
-                }, "陌生人", "http://192.168.79.206:8005/face_lib/test/15372566646368847403.jpg");
-                push_info.detach();
-            } else {
-                 LogI("=====识别过的陌生人%d,相识分数：%f", package_serial, simil_score);
-            }
 
             result->expiry_time_ = now;
         }
@@ -133,16 +131,17 @@ void AiResultReport::RecvAiResult(const AiResult &result)
 void AiResultReport::RecvEmployeeResult(const AiResult &result)
 {
     LogI(" Employee frame_serial=%u, package_serial=%d", result.frame_serial_, result.package_serial_);
-    auto feature = result.feature_;
-    feature->expiry_time_ = std::chrono::system_clock::now();
-    feature->is_employee_ = true;
-    auto face_lib = GetFeatureLib();
-    face_lib->AddCache(feature);
     //推送给php
-    std::thread push_info([&](const std::string& name, const std::string& photo){
+    std::thread push_info([&](std::shared_ptr<FaceFeature> f, const std::string& name, const std::string& photo){
+        auto feature = f;
+        feature->expiry_time_ = std::chrono::system_clock::now();
+        feature->is_employee_ = true;
+        auto face_lib = GetFeatureLib();
+        face_lib->AddCache(feature);
+
         PushRedis redis;
         std::time_t unix_timestamp = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
         redis.Push(name, "1", photo, unix_timestamp);
-    }, result.feature_->name, result.feature_->face_photo);
+    }, std::move(result.feature_), result.feature_->name, result.feature_->face_photo);
     push_info.detach();
 }

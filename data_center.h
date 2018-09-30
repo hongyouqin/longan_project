@@ -5,6 +5,8 @@
 #include <grpcpp/grpcpp.h>
 #include "data_center_proto/dc_rpc.grpc.pb.h"
 
+class FaceFeature;
+
 class DataCenter {
 public:
     DataCenter(std::shared_ptr<grpc::Channel> channel);
@@ -16,7 +18,8 @@ public:
     bool StorageStrangerFace(const ::proto::UserParam& request, ::proto::StorageReply* response);
 
     //拉取人脸注册表的所有数据
-    bool ExtractFaceRegTableDatas(const ::proto::ExtractFaceParam& request, ::proto::StorageReply* response);
+    bool ExtractFaceRegTableDatas(std::vector<std::shared_ptr<FaceFeature>> &faces);
+
 private:
     std::unique_ptr<proto::LonganDataCenter::Stub> stub_;
 };

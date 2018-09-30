@@ -3,8 +3,10 @@
 
 #include <QObject>
 #include <memory>
+#include <atomic>
 
 class FaceTracking;
+class FaceDetection;
 class FacesData;
 class FrameData;
 class FaceAnalysisModel;
@@ -22,6 +24,8 @@ public:
     void set_serial_number(int serial);
 
     int serial_number() const;
+
+    void SendDetectedSignal();
 signals:
     void faces_detected_signal(const FacesData& data); //人脸跟踪信号
 public slots:
@@ -30,9 +34,11 @@ public slots:
 private:
     std::unique_ptr<FaceTracking> ft_engine_;
 
+    std::unique_ptr<FaceDetection> fd_engine_;
+
     std::shared_ptr<FaceAnalysisModel> face_analysis_;
 
-    int face_orient_ = 0;
+    std::atomic_int face_orient_ = {0};
 
     int serial_number_ = 0;
 };

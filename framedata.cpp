@@ -25,6 +25,7 @@ FrameData::FrameData(const FrameData &lh)
     this->data_size_ = lh.data_size_;
     this->mat_ = lh.mat_;
     this->serial_ = lh.serial_;
+    this->frame_time_ = lh.frame_time_;
 }
 
 FrameData &FrameData::operator=(const FrameData &lh)
@@ -41,6 +42,7 @@ FrameData &FrameData::operator=(const FrameData &lh)
     this->data_size_ = lh.data_size_;
     this->mat_ = lh.mat_;
     this->serial_ = lh.serial_;
+    this->frame_time_ = lh.frame_time_;
     return *this;
 }
 
@@ -100,4 +102,14 @@ int FrameData::GetSerial() const
 void FrameData::SetSerial(int serial)
 {
     serial_ = serial;
+}
+
+void FrameData::SetFrameTime(std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> time)
+{
+    frame_time_ = time;
+}
+
+std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> FrameData::FrameTime() const
+{
+    return frame_time_;
 }
