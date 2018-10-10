@@ -46,7 +46,7 @@ private:
 
     std::shared_ptr<FaceProcess> face_process_ = nullptr;
 
-    int control_frame_frequency_ = 5; //控制处理的频率
+    int control_frame_frequency_; //控制处理的频率
 };
 
 MainWindow* GetMainWindow();

@@ -8,7 +8,7 @@
 #include "logger.h"
 
 namespace {
-    const int kBaseNum = 90; //分配的基数
+    const int kBaseNum = 100; //分配的基数
 }
 
 AiThreadsManage* GetAiManageObj() {

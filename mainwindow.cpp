@@ -79,10 +79,12 @@ void MainWindow::Initialize()
     connect(face_thread, SIGNAL(finished()), face_thread, SLOT(deleteLater()));
 
    auto system = Configs::GetSystemConfig();
+   control_frame_frequency_ = system->frame_frequency;
+
    if (system->show_camera == 1) {
         connect(face_process_.get(), SIGNAL(faces_detected_signal(const FacesData&)), camera_ctrl_.get(), SLOT(RecvDetectedFaces(const FacesData&)));
    }
-    face_thread->start();
+   face_thread->start();
 
     LogI("加载员工数据");
 
@@ -127,8 +129,9 @@ bool MainWindow::event(QEvent *event)
                this->update();
            }
 
+           int limit_frame = system->frame_frequency;
            //跳帧分析
-           if (control_frame_frequency_ >= 5) {
+           if (control_frame_frequency_ >= limit_frame) {
                control_frame_frequency_ = 1;
                //视频流推送到人脸引擎处理
                FrameData data;

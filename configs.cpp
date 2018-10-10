@@ -46,6 +46,7 @@ bool Configs::LoadConfig()
         system_config_.stranger_push_time = tables_->get_qualified_as<int>("system.stranger_push_time").value_or(500);
         system_config_.is_push_stranger = tables_->get_qualified_as<int>("system.is_push_stranger").value_or(0);
         system_config_.employee_push_time = tables_->get_qualified_as<int>("system.employee_push_time").value_or(500);
+        system_config_.frame_frequency = tables_->get_qualified_as<int>("system.frame_frequency").value_or(1);
     }
     catch (const cpptoml::parse_exception &e)
     {

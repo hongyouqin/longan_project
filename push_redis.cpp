@@ -2,6 +2,7 @@
 #include <hiredis/hiredis.h>
 #include "configs.h"
 #include "logger.h"
+#include "printexectime.h"
 
 PushRedis::PushRedis()
 {
@@ -10,6 +11,7 @@ PushRedis::PushRedis()
 
 bool PushRedis::Push(const std::string& user_name, const std::string& camera_id, const std::string& pic_url, unsigned int time)
 {
+    PrintExecTime pt("推送");
     auto config = Configs::GetRedisConfig();
     std::string ip = config->ip;
     int port = config->port;

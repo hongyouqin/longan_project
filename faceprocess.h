@@ -19,7 +19,7 @@ public:
 
     ~FaceProcess();
 
-    std::vector<QRect> Frame(unsigned char *frame_data,int frame_width,int frame_height, unsigned	int input_image_format);
+    std::vector<QRect> Frame(unsigned char *frame_data,int frame_width,int frame_height, unsigned	int input_image_format, int &out_face_orient);
 
     void set_serial_number(int serial);
 
@@ -37,8 +37,6 @@ private:
     std::unique_ptr<FaceDetection> fd_engine_;
 
     std::shared_ptr<FaceAnalysisModel> face_analysis_;
-
-    std::atomic_int face_orient_ = {0};
 
     int serial_number_ = 0;
 };

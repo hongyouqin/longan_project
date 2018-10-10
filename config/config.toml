@@ -30,6 +30,10 @@ is_push_stranger = 0
 #注册员工推送时间，单位是毫秒
 employee_push_time = 12000
 
+#取帧频率
+frame_frequency = 5
+
+
 
 
 

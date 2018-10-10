@@ -41,7 +41,7 @@ FaceProcess::~FaceProcess()
     }
 }
 
-std::vector<QRect> FaceProcess::Frame(unsigned char *frame_data, int frame_width, int frame_height, unsigned int input_image_format)
+std::vector<QRect> FaceProcess::Frame(unsigned char *frame_data, int frame_width, int frame_height, unsigned int input_image_format, int &out_face_orient)
 {
     std::vector<QRect> temp_rects;
 
@@ -99,7 +99,7 @@ std::vector<QRect> FaceProcess::Frame(unsigned char *frame_data, int frame_width
       temp_rects.push_back(rect);
     }
 
-    face_orient_ = *face_reult->lfaceOrient;
+    out_face_orient = *face_reult->lfaceOrient;
 
     return std::move(temp_rects);
 }
@@ -126,7 +126,8 @@ void FaceProcess::CameraFrame(FrameData &frame)
         cv::Mat mat = frame.GetMat();
         int w = mat.cols;
         int h = mat.rows;
-        std::vector<QRect> result =  Frame(mat.data, w, h, ASVL_PAF_RGB24_B8G8R8);
+        int out_face_orient;
+        std::vector<QRect> result =  Frame(mat.data, w, h, ASVL_PAF_RGB24_B8G8R8, out_face_orient);
         if (!result.empty()) {
             //发送检测到的人脸信息
             FacesData data;
@@ -136,7 +137,7 @@ void FaceProcess::CameraFrame(FrameData &frame)
             data.SetFrameHeight(h);
             data.SetFormat(ASVL_PAF_RGB24_B8G8R8);
             data.SetMat(mat);
-            data.SetFaceOrient(face_orient_);
+            data.SetFaceOrient(out_face_orient);
             emit faces_detected_signal(data);
         }
     }, this, frame);

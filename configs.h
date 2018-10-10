@@ -35,6 +35,8 @@ struct SystemConfig {
     int is_push_stranger;
 
     int employee_push_time;
+
+    int frame_frequency;
 };
 
 //redis服务器配置

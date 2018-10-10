@@ -87,7 +87,7 @@ float FaceAi::FaceComparison(const std::shared_ptr<FaceFeature> &feature, const 
     float simil_score = 0.0f;
     long ret = fr_engine_->FacePairMatching(&ref_face_model, &probe_feature, &simil_score);
     if (ret != 0) {
-        LogE("人脸比对失败: %d", ret);
+        LogE("人脸比对失败: %d,帧编号=%d", ret, ref_feature.user_id_);
         return simil_score;
     }
 
@@ -172,12 +172,12 @@ void FaceAi::RecvEmployeeData(const FaceFeature& face)
 
     if (result) {
         //匹配上了
-
         //通知其他线程停止识别，（包括陌生人线程）
         GetAiManageObj()->NotifyAllAiStop();
         set_stop_signal(false);
         //推送
-       // LogI("识别信息： name=%s; userid=%d; face_photo=%s; timestamp=%u", result->name.c_str(), result->user_id_, result->face_photo.c_str(), result->timestamp);
+        result->frame_time_ = face.frame_time_;
+
         AiResult employee_res;
         employee_res.find_match_ = true;
         employee_res.frame_serial_ = face.frame_number_;

@@ -31,8 +31,6 @@ int FaceFilterBarrier::Barrier(const FaceFeature &feature)
     std::shared_ptr<FaceFeature> result = nullptr;
     bool is_recognition = false;
 
-    //LogI("缓存里有目前有：%d条数据", len);
-
     for (int index = 0; index < len; ++index) {
         auto face = lib->GetCache(index);
         simil_score = ai_->FaceComparison(face, feature);
@@ -51,11 +49,6 @@ int FaceFilterBarrier::Barrier(const FaceFeature &feature)
         int time = static_cast<int>(milliseconds * 1000);
         int push_time = config->employee_push_time;
         if (time > push_time) {
-            //LogI("缓存里有目前有：%d条数据", len);
-            std::time_t frame_time = std::chrono::system_clock::to_time_t(now);
-            std::stringstream ss;
-            ss << std::put_time(std::localtime(&frame_time), "%F %T");
-            LogI("员工 name=%s； frame_time=%s; face_photo=%s; 识别分数:%f", result->name.c_str(), ss.str().c_str(), result->face_photo.c_str(), simil_score);
             //推送给php
             std::thread push_info([&](const std::string& name, const std::string& photo){
                 PushRedis redis;
@@ -63,6 +56,13 @@ int FaceFilterBarrier::Barrier(const FaceFeature &feature)
                 redis.Push(name, "1", photo, unix_timestamp);
             },result->name, result->face_photo);
             push_info.detach();
+
+            LogI("缓存里有目前有：%d条数据", len);
+            std::time_t frame_time = std::chrono::system_clock::to_time_t(now);
+            std::stringstream ss;
+            ss << std::put_time(std::localtime(&frame_time), "%F %T");
+            LogI("员工 name=%s； frame_time=%s; face_photo=%s; 识别分数:%f", result->name.c_str(), ss.str().c_str(), result->face_photo.c_str(), simil_score);
+
             result->expiry_time_ = now;
         } else {
             std::time_t frame_time = std::chrono::system_clock::to_time_t(now);
