@@ -87,7 +87,8 @@ void DataCenter::RegisterService()
     while(true) {
         bool res = notify->Read(&msg);
         if (!res) {
-            break;
+            LogI("@@@@@@@@@@数据读取完成@@@@@@@@@@");
+            continue;
         } else {
             LogI("@@@@@@@@@@有更新通知@@@@@@@@@@");
             if (GetAiManageObj()->IsTriggerUpdate()) {
@@ -111,7 +112,7 @@ void DataCenter::UpdateFaceLib(std::chrono::time_point<std::chrono::system_clock
             auto duration = std::chrono::duration_cast<std::chrono::minutes>(now_time - update_time);
             double c = (double)duration.count();
             double minutes = c * std::chrono::minutes::period::num / std::chrono::minutes::period::den;
-            if (minutes >= delay_time) {
+            if (minutes >= delay_time*60) {
                 PrintExecTime time("加载人脸库");
                 LogI("开始更新人脸库");
                 auto face_lib = GetFeatureLib();
