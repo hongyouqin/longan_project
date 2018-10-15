@@ -2,6 +2,7 @@
 #define DATA_CENTER_H_
 
 #include <memory>
+#include <chrono>
 #include <grpcpp/grpcpp.h>
 #include "data_center_proto/dc_rpc.grpc.pb.h"
 
@@ -19,6 +20,12 @@ public:
 
     //拉取人脸注册表的所有数据
     bool ExtractFaceRegTableDatas(std::vector<std::shared_ptr<FaceFeature>> &faces);
+
+    //注册服务
+    void RegisterService();
+
+    //更新人脸库
+    void UpdateFaceLib(std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> update_time, int delay_time);
 
 private:
     std::unique_ptr<proto::LonganDataCenter::Stub> stub_;

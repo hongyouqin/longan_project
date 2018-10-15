@@ -15,11 +15,21 @@ service LonganDataCenter {
 
     //拉取人脸注册表的所有数据
     rpc ExtractFaceRegTableDatas(Empty) returns(stream Feature) {}
+
+    //注册客户端，用于之后的更新通知接收
+    rpc RegisterClient(Empty) returns(stream UpdateNotity) {}
 }
 
 //拉取人脸参数
 message Empty {
     //空
+}
+
+message UpdateNotity {
+    bool employee_table_update = 1; //注册员工人脸表有更新
+
+    bool storage_table_update = 2; //陌生人人脸表有更新
+
 }
 
 //人脸特征

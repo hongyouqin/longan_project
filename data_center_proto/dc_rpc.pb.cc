@@ -28,6 +28,11 @@ class EmptyDefaultTypeInternal {
   ::google::protobuf::internal::ExplicitlyConstructed<Empty>
       _instance;
 } _Empty_default_instance_;
+class UpdateNotityDefaultTypeInternal {
+ public:
+  ::google::protobuf::internal::ExplicitlyConstructed<UpdateNotity>
+      _instance;
+} _UpdateNotity_default_instance_;
 class FeatureDefaultTypeInternal {
  public:
   ::google::protobuf::internal::ExplicitlyConstructed<Feature>
@@ -58,6 +63,20 @@ static void InitDefaultsEmpty() {
 
 ::google::protobuf::internal::SCCInfo<0> scc_info_Empty =
     {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsEmpty}, {}};
+
+static void InitDefaultsUpdateNotity() {
+  GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+  {
+    void* ptr = &::proto::_UpdateNotity_default_instance_;
+    new (ptr) ::proto::UpdateNotity();
+    ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
+  }
+  ::proto::UpdateNotity::InitAsDefaultInstance();
+}
+
+::google::protobuf::internal::SCCInfo<0> scc_info_UpdateNotity =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsUpdateNotity}, {}};
 
 static void InitDefaultsFeature() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -104,12 +123,13 @@ static void InitDefaultsStorageReply() {
 
 void InitDefaults() {
   ::google::protobuf::internal::InitSCC(&scc_info_Empty.base);
+  ::google::protobuf::internal::InitSCC(&scc_info_UpdateNotity.base);
   ::google::protobuf::internal::InitSCC(&scc_info_Feature.base);
   ::google::protobuf::internal::InitSCC(&scc_info_UserParam.base);
   ::google::protobuf::internal::InitSCC(&scc_info_StorageReply.base);
 }
 
-::google::protobuf::Metadata file_level_metadata[4];
+::google::protobuf::Metadata file_level_metadata[5];
 
 const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
   ~0u,  // no _has_bits_
@@ -117,6 +137,13 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
+  ~0u,  // no _has_bits_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::proto::UpdateNotity, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::proto::UpdateNotity, employee_table_update_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::proto::UpdateNotity, storage_table_update_),
   ~0u,  // no _has_bits_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::proto::Feature, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -144,13 +171,15 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
 };
 static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, sizeof(::proto::Empty)},
-  { 5, -1, sizeof(::proto::Feature)},
-  { 11, -1, sizeof(::proto::UserParam)},
-  { 23, -1, sizeof(::proto::StorageReply)},
+  { 5, -1, sizeof(::proto::UpdateNotity)},
+  { 12, -1, sizeof(::proto::Feature)},
+  { 18, -1, sizeof(::proto::UserParam)},
+  { 30, -1, sizeof(::proto::StorageReply)},
 };
 
 static ::google::protobuf::Message const * const file_default_instances[] = {
   reinterpret_cast<const ::google::protobuf::Message*>(&::proto::_Empty_default_instance_),
+  reinterpret_cast<const ::google::protobuf::Message*>(&::proto::_UpdateNotity_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&::proto::_Feature_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&::proto::_UserParam_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&::proto::_StorageReply_default_instance_),
@@ -171,28 +200,31 @@ void protobuf_AssignDescriptorsOnce() {
 void protobuf_RegisterTypes(const ::std::string&) GOOGLE_PROTOBUF_ATTRIBUTE_COLD;
 void protobuf_RegisterTypes(const ::std::string&) {
   protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 4);
+  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 5);
 }
 
 void AddDescriptorsImpl() {
   InitDefaults();
   static const char descriptor[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-      "\n\014dc_rpc.proto\022\005proto\"\007\n\005Empty\")\n\007Featur"
-      "e\022\036\n\004face\030\001 \001(\0132\020.proto.UserParam\"\225\001\n\tUs"
-      "erParam\022\014\n\004name\030\001 \001(\t\022\017\n\007user_id\030\002 \001(\004\022\022"
-      "\n\nface_photo\030\003 \001(\t\022\024\n\014face_feature\030\004 \001(\014"
-      "\022\021\n\tface_size\030\005 \001(\004\022\030\n\020acquisition_time\030"
-      "\006 \001(\004\022\022\n\nface_score\030\007 \001(\r\"\"\n\014StorageRepl"
-      "y\022\022\n\nis_success\030\001 \001(\0102\320\001\n\020LonganDataCent"
-      "er\022>\n\023StorageEmployeeFace\022\020.proto.UserPa"
-      "ram\032\023.proto.StorageReply\"\000\022>\n\023StorageStr"
-      "angerFace\022\020.proto.UserParam\032\023.proto.Stor"
-      "ageReply\"\000\022<\n\030ExtractFaceRegTableDatas\022\014"
-      ".proto.Empty\032\016.proto.Feature\"\0000\001B\022\n\016com."
-      "longan.rpcP\001b\006proto3"
+      "\n\014dc_rpc.proto\022\005proto\"\007\n\005Empty\"K\n\014Update"
+      "Notity\022\035\n\025employee_table_update\030\001 \001(\010\022\034\n"
+      "\024storage_table_update\030\002 \001(\010\")\n\007Feature\022\036"
+      "\n\004face\030\001 \001(\0132\020.proto.UserParam\"\225\001\n\tUserP"
+      "aram\022\014\n\004name\030\001 \001(\t\022\017\n\007user_id\030\002 \001(\004\022\022\n\nf"
+      "ace_photo\030\003 \001(\t\022\024\n\014face_feature\030\004 \001(\014\022\021\n"
+      "\tface_size\030\005 \001(\004\022\030\n\020acquisition_time\030\006 \001"
+      "(\004\022\022\n\nface_score\030\007 \001(\r\"\"\n\014StorageReply\022\022"
+      "\n\nis_success\030\001 \001(\0102\211\002\n\020LonganDataCenter\022"
+      ">\n\023StorageEmployeeFace\022\020.proto.UserParam"
+      "\032\023.proto.StorageReply\"\000\022>\n\023StorageStrang"
+      "erFace\022\020.proto.UserParam\032\023.proto.Storage"
+      "Reply\"\000\022<\n\030ExtractFaceRegTableDatas\022\014.pr"
+      "oto.Empty\032\016.proto.Feature\"\0000\001\0227\n\016Registe"
+      "rClient\022\014.proto.Empty\032\023.proto.UpdateNoti"
+      "ty\"\0000\001B\022\n\016com.longan.rpcP\001b\006proto3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 500);
+      descriptor, 634);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "dc_rpc.proto", &protobuf_RegisterTypes);
 }
@@ -384,6 +416,267 @@ void Empty::InternalSwap(Empty* other) {
 }
 
 ::google::protobuf::Metadata Empty::GetMetadata() const {
+  protobuf_dc_5frpc_2eproto::protobuf_AssignDescriptorsOnce();
+  return ::protobuf_dc_5frpc_2eproto::file_level_metadata[kIndexInFileMessages];
+}
+
+
+// ===================================================================
+
+void UpdateNotity::InitAsDefaultInstance() {
+}
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int UpdateNotity::kEmployeeTableUpdateFieldNumber;
+const int UpdateNotity::kStorageTableUpdateFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+UpdateNotity::UpdateNotity()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  ::google::protobuf::internal::InitSCC(
+      &protobuf_dc_5frpc_2eproto::scc_info_UpdateNotity.base);
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:proto.UpdateNotity)
+}
+UpdateNotity::UpdateNotity(const UpdateNotity& from)
+  : ::google::protobuf::Message(),
+      _internal_metadata_(NULL) {
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ::memcpy(&employee_table_update_, &from.employee_table_update_,
+    static_cast<size_t>(reinterpret_cast<char*>(&storage_table_update_) -
+    reinterpret_cast<char*>(&employee_table_update_)) + sizeof(storage_table_update_));
+  // @@protoc_insertion_point(copy_constructor:proto.UpdateNotity)
+}
+
+void UpdateNotity::SharedCtor() {
+  ::memset(&employee_table_update_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&storage_table_update_) -
+      reinterpret_cast<char*>(&employee_table_update_)) + sizeof(storage_table_update_));
+}
+
+UpdateNotity::~UpdateNotity() {
+  // @@protoc_insertion_point(destructor:proto.UpdateNotity)
+  SharedDtor();
+}
+
+void UpdateNotity::SharedDtor() {
+}
+
+void UpdateNotity::SetCachedSize(int size) const {
+  _cached_size_.Set(size);
+}
+const ::google::protobuf::Descriptor* UpdateNotity::descriptor() {
+  ::protobuf_dc_5frpc_2eproto::protobuf_AssignDescriptorsOnce();
+  return ::protobuf_dc_5frpc_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
+}
+
+const UpdateNotity& UpdateNotity::default_instance() {
+  ::google::protobuf::internal::InitSCC(&protobuf_dc_5frpc_2eproto::scc_info_UpdateNotity.base);
+  return *internal_default_instance();
+}
+
+
+void UpdateNotity::Clear() {
+// @@protoc_insertion_point(message_clear_start:proto.UpdateNotity)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  ::memset(&employee_table_update_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&storage_table_update_) -
+      reinterpret_cast<char*>(&employee_table_update_)) + sizeof(storage_table_update_));
+  _internal_metadata_.Clear();
+}
+
+bool UpdateNotity::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:proto.UpdateNotity)
+  for (;;) {
+    ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // bool employee_table_update = 1;
+      case 1: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(8u /* 8 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &employee_table_update_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // bool storage_table_update = 2;
+      case 2: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(16u /* 16 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &storage_table_update_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, _internal_metadata_.mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:proto.UpdateNotity)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:proto.UpdateNotity)
+  return false;
+#undef DO_
+}
+
+void UpdateNotity::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:proto.UpdateNotity)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // bool employee_table_update = 1;
+  if (this->employee_table_update() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(1, this->employee_table_update(), output);
+  }
+
+  // bool storage_table_update = 2;
+  if (this->storage_table_update() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(2, this->storage_table_update(), output);
+  }
+
+  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
+  }
+  // @@protoc_insertion_point(serialize_end:proto.UpdateNotity)
+}
+
+::google::protobuf::uint8* UpdateNotity::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic; // Unused
+  // @@protoc_insertion_point(serialize_to_array_start:proto.UpdateNotity)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // bool employee_table_update = 1;
+  if (this->employee_table_update() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(1, this->employee_table_update(), target);
+  }
+
+  // bool storage_table_update = 2;
+  if (this->storage_table_update() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(2, this->storage_table_update(), target);
+  }
+
+  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:proto.UpdateNotity)
+  return target;
+}
+
+size_t UpdateNotity::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:proto.UpdateNotity)
+  size_t total_size = 0;
+
+  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
+  }
+  // bool employee_table_update = 1;
+  if (this->employee_table_update() != 0) {
+    total_size += 1 + 1;
+  }
+
+  // bool storage_table_update = 2;
+  if (this->storage_table_update() != 0) {
+    total_size += 1 + 1;
+  }
+
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  SetCachedSize(cached_size);
+  return total_size;
+}
+
+void UpdateNotity::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:proto.UpdateNotity)
+  GOOGLE_DCHECK_NE(&from, this);
+  const UpdateNotity* source =
+      ::google::protobuf::internal::DynamicCastToGenerated<const UpdateNotity>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:proto.UpdateNotity)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:proto.UpdateNotity)
+    MergeFrom(*source);
+  }
+}
+
+void UpdateNotity::MergeFrom(const UpdateNotity& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:proto.UpdateNotity)
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from.employee_table_update() != 0) {
+    set_employee_table_update(from.employee_table_update());
+  }
+  if (from.storage_table_update() != 0) {
+    set_storage_table_update(from.storage_table_update());
+  }
+}
+
+void UpdateNotity::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:proto.UpdateNotity)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void UpdateNotity::CopyFrom(const UpdateNotity& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:proto.UpdateNotity)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool UpdateNotity::IsInitialized() const {
+  return true;
+}
+
+void UpdateNotity::Swap(UpdateNotity* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void UpdateNotity::InternalSwap(UpdateNotity* other) {
+  using std::swap;
+  swap(employee_table_update_, other->employee_table_update_);
+  swap(storage_table_update_, other->storage_table_update_);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+}
+
+::google::protobuf::Metadata UpdateNotity::GetMetadata() const {
   protobuf_dc_5frpc_2eproto::protobuf_AssignDescriptorsOnce();
   return ::protobuf_dc_5frpc_2eproto::file_level_metadata[kIndexInFileMessages];
 }
@@ -1349,6 +1642,9 @@ namespace google {
 namespace protobuf {
 template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::proto::Empty* Arena::CreateMaybeMessage< ::proto::Empty >(Arena* arena) {
   return Arena::CreateInternal< ::proto::Empty >(arena);
+}
+template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::proto::UpdateNotity* Arena::CreateMaybeMessage< ::proto::UpdateNotity >(Arena* arena) {
+  return Arena::CreateInternal< ::proto::UpdateNotity >(arena);
 }
 template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::proto::Feature* Arena::CreateMaybeMessage< ::proto::Feature >(Arena* arena) {
   return Arena::CreateInternal< ::proto::Feature >(arena);

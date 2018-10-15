@@ -38,7 +38,7 @@ namespace protobuf_dc_5frpc_2eproto {
 struct TableStruct {
   static const ::google::protobuf::internal::ParseTableField entries[];
   static const ::google::protobuf::internal::AuxillaryParseTableField aux[];
-  static const ::google::protobuf::internal::ParseTable schema[4];
+  static const ::google::protobuf::internal::ParseTable schema[5];
   static const ::google::protobuf::internal::FieldMetadata field_metadata[];
   static const ::google::protobuf::internal::SerializationTable serialization_table[];
   static const ::google::protobuf::uint32 offsets[];
@@ -55,6 +55,9 @@ extern FeatureDefaultTypeInternal _Feature_default_instance_;
 class StorageReply;
 class StorageReplyDefaultTypeInternal;
 extern StorageReplyDefaultTypeInternal _StorageReply_default_instance_;
+class UpdateNotity;
+class UpdateNotityDefaultTypeInternal;
+extern UpdateNotityDefaultTypeInternal _UpdateNotity_default_instance_;
 class UserParam;
 class UserParamDefaultTypeInternal;
 extern UserParamDefaultTypeInternal _UserParam_default_instance_;
@@ -64,6 +67,7 @@ namespace protobuf {
 template<> ::proto::Empty* Arena::CreateMaybeMessage<::proto::Empty>(Arena*);
 template<> ::proto::Feature* Arena::CreateMaybeMessage<::proto::Feature>(Arena*);
 template<> ::proto::StorageReply* Arena::CreateMaybeMessage<::proto::StorageReply>(Arena*);
+template<> ::proto::UpdateNotity* Arena::CreateMaybeMessage<::proto::UpdateNotity>(Arena*);
 template<> ::proto::UserParam* Arena::CreateMaybeMessage<::proto::UserParam>(Arena*);
 }  // namespace protobuf
 }  // namespace google
@@ -167,6 +171,116 @@ class Empty : public ::google::protobuf::Message /* @@protoc_insertion_point(cla
 };
 // -------------------------------------------------------------------
 
+class UpdateNotity : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:proto.UpdateNotity) */ {
+ public:
+  UpdateNotity();
+  virtual ~UpdateNotity();
+
+  UpdateNotity(const UpdateNotity& from);
+
+  inline UpdateNotity& operator=(const UpdateNotity& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  UpdateNotity(UpdateNotity&& from) noexcept
+    : UpdateNotity() {
+    *this = ::std::move(from);
+  }
+
+  inline UpdateNotity& operator=(UpdateNotity&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const UpdateNotity& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const UpdateNotity* internal_default_instance() {
+    return reinterpret_cast<const UpdateNotity*>(
+               &_UpdateNotity_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    1;
+
+  void Swap(UpdateNotity* other);
+  friend void swap(UpdateNotity& a, UpdateNotity& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline UpdateNotity* New() const final {
+    return CreateMaybeMessage<UpdateNotity>(NULL);
+  }
+
+  UpdateNotity* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<UpdateNotity>(arena);
+  }
+  void CopyFrom(const ::google::protobuf::Message& from) final;
+  void MergeFrom(const ::google::protobuf::Message& from) final;
+  void CopyFrom(const UpdateNotity& from);
+  void MergeFrom(const UpdateNotity& from);
+  void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) final;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const final;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(UpdateNotity* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // bool employee_table_update = 1;
+  void clear_employee_table_update();
+  static const int kEmployeeTableUpdateFieldNumber = 1;
+  bool employee_table_update() const;
+  void set_employee_table_update(bool value);
+
+  // bool storage_table_update = 2;
+  void clear_storage_table_update();
+  static const int kStorageTableUpdateFieldNumber = 2;
+  bool storage_table_update() const;
+  void set_storage_table_update(bool value);
+
+  // @@protoc_insertion_point(class_scope:proto.UpdateNotity)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  bool employee_table_update_;
+  bool storage_table_update_;
+  mutable ::google::protobuf::internal::CachedSize _cached_size_;
+  friend struct ::protobuf_dc_5frpc_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
 class Feature : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:proto.Feature) */ {
  public:
   Feature();
@@ -202,7 +316,7 @@ class Feature : public ::google::protobuf::Message /* @@protoc_insertion_point(c
                &_Feature_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    1;
+    2;
 
   void Swap(Feature* other);
   friend void swap(Feature& a, Feature& b) {
@@ -311,7 +425,7 @@ class UserParam : public ::google::protobuf::Message /* @@protoc_insertion_point
                &_UserParam_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    2;
+    3;
 
   void Swap(UserParam* other);
   friend void swap(UserParam& a, UserParam& b) {
@@ -480,7 +594,7 @@ class StorageReply : public ::google::protobuf::Message /* @@protoc_insertion_po
                &_StorageReply_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    3;
+    4;
 
   void Swap(StorageReply* other);
   friend void swap(StorageReply& a, StorageReply& b) {
@@ -556,6 +670,38 @@ class StorageReply : public ::google::protobuf::Message /* @@protoc_insertion_po
   #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif  // __GNUC__
 // Empty
+
+// -------------------------------------------------------------------
+
+// UpdateNotity
+
+// bool employee_table_update = 1;
+inline void UpdateNotity::clear_employee_table_update() {
+  employee_table_update_ = false;
+}
+inline bool UpdateNotity::employee_table_update() const {
+  // @@protoc_insertion_point(field_get:proto.UpdateNotity.employee_table_update)
+  return employee_table_update_;
+}
+inline void UpdateNotity::set_employee_table_update(bool value) {
+  
+  employee_table_update_ = value;
+  // @@protoc_insertion_point(field_set:proto.UpdateNotity.employee_table_update)
+}
+
+// bool storage_table_update = 2;
+inline void UpdateNotity::clear_storage_table_update() {
+  storage_table_update_ = false;
+}
+inline bool UpdateNotity::storage_table_update() const {
+  // @@protoc_insertion_point(field_get:proto.UpdateNotity.storage_table_update)
+  return storage_table_update_;
+}
+inline void UpdateNotity::set_storage_table_update(bool value) {
+  
+  storage_table_update_ = value;
+  // @@protoc_insertion_point(field_set:proto.UpdateNotity.storage_table_update)
+}
 
 // -------------------------------------------------------------------
 
@@ -855,6 +1001,8 @@ inline void StorageReply::set_is_success(bool value) {
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

@@ -6,10 +6,8 @@
 #include "facefeature.h"
 #include "face_feature_library.h"
 #include "logger.h"
-
-namespace {
-    const int kBaseNum = 100; //分配的基数
-}
+#include "configs.h"
+#include "data_center.h"
 
 AiThreadsManage* GetAiManageObj() {
     static AiThreadsManage manage;
@@ -30,10 +28,12 @@ AiThreadsManage::AiThreadsManage(QObject *parent) : QObject(parent)
 
 void AiThreadsManage::AllocateThreads()
 {
+    auto system = Configs::GetSystemConfig();
+    int base_num = system->per_face_process_num;
 
     auto face_lib = GetFeatureLib();
     int count = static_cast<int>(face_lib->GetRegFaceCount());
-    int allocate_thread_number = (count / kBaseNum) + ((count % kBaseNum != 0) ? 1 : 0);
+    int allocate_thread_number = (count / base_num) + ((count % base_num != 0) ? 1 : 0);
     if (allocate_thread_number == 0) {
         allocate_thread_number = 1;
     }
@@ -43,7 +43,7 @@ void AiThreadsManage::AllocateThreads()
     for (int index = 0; index < allocate_thread_number; ++index) {
         std::shared_ptr<FaceAi> ai= std::make_shared<FaceAi>();
         ai->set_serial_number(1000 + index);
-        SEGMENTNUMER segment{index*kBaseNum, (index+1)*kBaseNum - 1};
+        SEGMENTNUMER segment{index*base_num, (index+1)*base_num - 1};
         ai->SetSegmentNumber(segment);
         ai->set_type(AiTypeEnum::REG_AI);
         QThread* thread = new QThread();
@@ -58,9 +58,24 @@ void AiThreadsManage::AllocateThreads()
     }
 }
 
+void AiThreadsManage::CleanupAiContainter()
+{
+    std::lock_guard<std::mutex> lock(reg_face_mutex_);
+    reg_face_ai_.clear();
+}
+
 void AiThreadsManage::SendFaceFeatureSignal(const FaceFeature& face_feature)
 {
     emit frame_face_featrue_signal(face_feature);
+}
+
+void AiThreadsManage::MonitorFaceLib()
+{
+    LogI("开启监听数据中心人脸注册");
+    auto dc = Configs::GetDataCenterConfig();
+    DataCenter data_center(grpc::CreateChannel(
+                               dc->addr, grpc::InsecureChannelCredentials()));
+    data_center.RegisterService();
 }
 
 void AiThreadsManage::NotifyAllAiStop()
@@ -75,4 +90,19 @@ int AiThreadsManage::GetRegFaceNum()
 {
     std::lock_guard<std::mutex> lock(reg_face_mutex_);
     return static_cast<int>(reg_face_ai_.size());
+}
+
+bool AiThreadsManage::IsTriggerUpdate() const
+{
+    return trigger_update_.load();
+}
+
+void AiThreadsManage::TriggerUpdate()
+{
+    trigger_update_.store(true);
+}
+
+void AiThreadsManage::CancelTriggerUpdate()
+{
+    trigger_update_.store(false);
 }

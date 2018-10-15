@@ -19,6 +19,7 @@ static const char* LonganDataCenter_method_names[] = {
   "/proto.LonganDataCenter/StorageEmployeeFace",
   "/proto.LonganDataCenter/StorageStrangerFace",
   "/proto.LonganDataCenter/ExtractFaceRegTableDatas",
+  "/proto.LonganDataCenter/RegisterClient",
 };
 
 std::unique_ptr< LonganDataCenter::Stub> LonganDataCenter::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -31,6 +32,7 @@ LonganDataCenter::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& c
   : channel_(channel), rpcmethod_StorageEmployeeFace_(LonganDataCenter_method_names[0], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_StorageStrangerFace_(LonganDataCenter_method_names[1], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_ExtractFaceRegTableDatas_(LonganDataCenter_method_names[2], ::grpc::internal::RpcMethod::SERVER_STREAMING, channel)
+  , rpcmethod_RegisterClient_(LonganDataCenter_method_names[3], ::grpc::internal::RpcMethod::SERVER_STREAMING, channel)
   {}
 
 ::grpc::Status LonganDataCenter::Stub::StorageEmployeeFace(::grpc::ClientContext* context, const ::proto::UserParam& request, ::proto::StorageReply* response) {
@@ -69,6 +71,18 @@ LonganDataCenter::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& c
   return ::grpc::internal::ClientAsyncReaderFactory< ::proto::Feature>::Create(channel_.get(), cq, rpcmethod_ExtractFaceRegTableDatas_, context, request, false, nullptr);
 }
 
+::grpc::ClientReader< ::proto::UpdateNotity>* LonganDataCenter::Stub::RegisterClientRaw(::grpc::ClientContext* context, const ::proto::Empty& request) {
+  return ::grpc::internal::ClientReaderFactory< ::proto::UpdateNotity>::Create(channel_.get(), rpcmethod_RegisterClient_, context, request);
+}
+
+::grpc::ClientAsyncReader< ::proto::UpdateNotity>* LonganDataCenter::Stub::AsyncRegisterClientRaw(::grpc::ClientContext* context, const ::proto::Empty& request, ::grpc::CompletionQueue* cq, void* tag) {
+  return ::grpc::internal::ClientAsyncReaderFactory< ::proto::UpdateNotity>::Create(channel_.get(), cq, rpcmethod_RegisterClient_, context, request, true, tag);
+}
+
+::grpc::ClientAsyncReader< ::proto::UpdateNotity>* LonganDataCenter::Stub::PrepareAsyncRegisterClientRaw(::grpc::ClientContext* context, const ::proto::Empty& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncReaderFactory< ::proto::UpdateNotity>::Create(channel_.get(), cq, rpcmethod_RegisterClient_, context, request, false, nullptr);
+}
+
 LonganDataCenter::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       LonganDataCenter_method_names[0],
@@ -85,6 +99,11 @@ LonganDataCenter::Service::Service() {
       ::grpc::internal::RpcMethod::SERVER_STREAMING,
       new ::grpc::internal::ServerStreamingHandler< LonganDataCenter::Service, ::proto::Empty, ::proto::Feature>(
           std::mem_fn(&LonganDataCenter::Service::ExtractFaceRegTableDatas), this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      LonganDataCenter_method_names[3],
+      ::grpc::internal::RpcMethod::SERVER_STREAMING,
+      new ::grpc::internal::ServerStreamingHandler< LonganDataCenter::Service, ::proto::Empty, ::proto::UpdateNotity>(
+          std::mem_fn(&LonganDataCenter::Service::RegisterClient), this)));
 }
 
 LonganDataCenter::Service::~Service() {
@@ -105,6 +124,13 @@ LonganDataCenter::Service::~Service() {
 }
 
 ::grpc::Status LonganDataCenter::Service::ExtractFaceRegTableDatas(::grpc::ServerContext* context, const ::proto::Empty* request, ::grpc::ServerWriter< ::proto::Feature>* writer) {
+  (void) context;
+  (void) request;
+  (void) writer;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status LonganDataCenter::Service::RegisterClient(::grpc::ServerContext* context, const ::proto::Empty* request, ::grpc::ServerWriter< ::proto::UpdateNotity>* writer) {
   (void) context;
   (void) request;
   (void) writer;

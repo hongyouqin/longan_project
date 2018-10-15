@@ -1,6 +1,11 @@
 #include "data_center.h"
+#include <thread>
 #include "logger.h"
+#include "configs.h"
 #include "facefeature.h"
+#include "aithreadsmanage.h"
+#include "face_feature_library.h"
+#include "printexectime.h"
 
 DataCenter::DataCenter(std::shared_ptr<grpc::Channel> channel)
     : stub_(proto::LonganDataCenter::NewStub(channel)) {
@@ -66,4 +71,68 @@ bool  DataCenter::ExtractFaceRegTableDatas(std::vector<std::shared_ptr<FaceFeatu
    }
 
    return false;
+}
+
+void DataCenter::RegisterService()
+{
+    grpc::ClientContext context;
+    ::proto::Empty empty;
+    auto notify = stub_->RegisterClient(&context, empty);
+    ::proto::UpdateNotity msg;
+    std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> update_time;
+
+    auto system = Configs::GetSystemConfig();
+    int delay_update_time = system->delay_upadte_time;
+
+    while(true) {
+        bool res = notify->Read(&msg);
+        if (!res) {
+            break;
+        } else {
+            LogI("@@@@@@@@@@有更新通知@@@@@@@@@@");
+            if (GetAiManageObj()->IsTriggerUpdate()) {
+                continue;
+            }
+            LogI("触发更新,%d分钟后开始更新", delay_update_time);
+            GetAiManageObj()->TriggerUpdate();
+            update_time = std::chrono::system_clock::now();
+            std::thread update_thread(&DataCenter::UpdateFaceLib, this, update_time, delay_update_time);
+            update_thread.detach();
+        }
+    }
+    LogI("@@@@@@@@@@监视线程退出@@@@@@@@@@");
+}
+
+void DataCenter::UpdateFaceLib(std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> update_time, int delay_time)
+{
+    while(true) {
+        if (GetAiManageObj()->IsTriggerUpdate()) {
+            auto now_time = std::chrono::system_clock::now();
+            auto duration = std::chrono::duration_cast<std::chrono::minutes>(now_time - update_time);
+            double c = (double)duration.count();
+            double minutes = c * std::chrono::minutes::period::num / std::chrono::minutes::period::den;
+            if (minutes >= delay_time) {
+                PrintExecTime time("加载人脸库");
+                LogI("开始更新人脸库");
+                auto face_lib = GetFeatureLib();
+                if (face_lib->LoadRegFaceLib()) {
+                    GetAiManageObj()->CleanupAiContainter();
+                    //分配人脸注册分析线程
+                    GetAiManageObj()->AllocateThreads();
+                    LogI("更新人脸库完成");
+                } else {
+                    LogI("更新人脸库失败");
+                }
+
+                GetAiManageObj()->CancelTriggerUpdate();
+                break;
+            } else {
+                std::this_thread::yield(); //交出cpu调度时间
+            }
+        } else {
+            std::this_thread::yield(); //交出cpu调度时间
+        }
+    }
+
+    LogI("更新线程退出");
 }

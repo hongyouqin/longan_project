@@ -6,7 +6,7 @@ user = "admin"
 password = "shw12345"
 
 [redis]
-ip = "192.168.79.206"
+ip = "192.168.90.58"
 port = 6379
 auth = "123456"
 
@@ -32,6 +32,13 @@ employee_push_time = 12000
 
 #取帧频率
 frame_frequency = 5
+
+#每一个线程处理的人脸数
+per_face_process_num = 100
+
+#延迟多少分钟更新人脸库，当收到数据中心更新的时候
+#单位是分钟
+delay_upadte_time = 10
 
 
 

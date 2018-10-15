@@ -37,6 +37,10 @@ struct SystemConfig {
     int employee_push_time;
 
     int frame_frequency;
+
+    int per_face_process_num;
+
+    int delay_upadte_time;
 };
 
 //redis服务器配置

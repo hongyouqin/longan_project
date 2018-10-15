@@ -60,6 +60,16 @@ class LonganDataCenter final {
     std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::proto::Feature>> PrepareAsyncExtractFaceRegTableDatas(::grpc::ClientContext* context, const ::proto::Empty& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::proto::Feature>>(PrepareAsyncExtractFaceRegTableDatasRaw(context, request, cq));
     }
+    // 注册客户端，用于之后的更新通知接收
+    std::unique_ptr< ::grpc::ClientReaderInterface< ::proto::UpdateNotity>> RegisterClient(::grpc::ClientContext* context, const ::proto::Empty& request) {
+      return std::unique_ptr< ::grpc::ClientReaderInterface< ::proto::UpdateNotity>>(RegisterClientRaw(context, request));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::proto::UpdateNotity>> AsyncRegisterClient(::grpc::ClientContext* context, const ::proto::Empty& request, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::proto::UpdateNotity>>(AsyncRegisterClientRaw(context, request, cq, tag));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::proto::UpdateNotity>> PrepareAsyncRegisterClient(::grpc::ClientContext* context, const ::proto::Empty& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::proto::UpdateNotity>>(PrepareAsyncRegisterClientRaw(context, request, cq));
+    }
   private:
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::proto::StorageReply>* AsyncStorageEmployeeFaceRaw(::grpc::ClientContext* context, const ::proto::UserParam& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::proto::StorageReply>* PrepareAsyncStorageEmployeeFaceRaw(::grpc::ClientContext* context, const ::proto::UserParam& request, ::grpc::CompletionQueue* cq) = 0;
@@ -68,6 +78,9 @@ class LonganDataCenter final {
     virtual ::grpc::ClientReaderInterface< ::proto::Feature>* ExtractFaceRegTableDatasRaw(::grpc::ClientContext* context, const ::proto::Empty& request) = 0;
     virtual ::grpc::ClientAsyncReaderInterface< ::proto::Feature>* AsyncExtractFaceRegTableDatasRaw(::grpc::ClientContext* context, const ::proto::Empty& request, ::grpc::CompletionQueue* cq, void* tag) = 0;
     virtual ::grpc::ClientAsyncReaderInterface< ::proto::Feature>* PrepareAsyncExtractFaceRegTableDatasRaw(::grpc::ClientContext* context, const ::proto::Empty& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientReaderInterface< ::proto::UpdateNotity>* RegisterClientRaw(::grpc::ClientContext* context, const ::proto::Empty& request) = 0;
+    virtual ::grpc::ClientAsyncReaderInterface< ::proto::UpdateNotity>* AsyncRegisterClientRaw(::grpc::ClientContext* context, const ::proto::Empty& request, ::grpc::CompletionQueue* cq, void* tag) = 0;
+    virtual ::grpc::ClientAsyncReaderInterface< ::proto::UpdateNotity>* PrepareAsyncRegisterClientRaw(::grpc::ClientContext* context, const ::proto::Empty& request, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
@@ -95,6 +108,15 @@ class LonganDataCenter final {
     std::unique_ptr< ::grpc::ClientAsyncReader< ::proto::Feature>> PrepareAsyncExtractFaceRegTableDatas(::grpc::ClientContext* context, const ::proto::Empty& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncReader< ::proto::Feature>>(PrepareAsyncExtractFaceRegTableDatasRaw(context, request, cq));
     }
+    std::unique_ptr< ::grpc::ClientReader< ::proto::UpdateNotity>> RegisterClient(::grpc::ClientContext* context, const ::proto::Empty& request) {
+      return std::unique_ptr< ::grpc::ClientReader< ::proto::UpdateNotity>>(RegisterClientRaw(context, request));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReader< ::proto::UpdateNotity>> AsyncRegisterClient(::grpc::ClientContext* context, const ::proto::Empty& request, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncReader< ::proto::UpdateNotity>>(AsyncRegisterClientRaw(context, request, cq, tag));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReader< ::proto::UpdateNotity>> PrepareAsyncRegisterClient(::grpc::ClientContext* context, const ::proto::Empty& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncReader< ::proto::UpdateNotity>>(PrepareAsyncRegisterClientRaw(context, request, cq));
+    }
 
    private:
     std::shared_ptr< ::grpc::ChannelInterface> channel_;
@@ -105,9 +127,13 @@ class LonganDataCenter final {
     ::grpc::ClientReader< ::proto::Feature>* ExtractFaceRegTableDatasRaw(::grpc::ClientContext* context, const ::proto::Empty& request) override;
     ::grpc::ClientAsyncReader< ::proto::Feature>* AsyncExtractFaceRegTableDatasRaw(::grpc::ClientContext* context, const ::proto::Empty& request, ::grpc::CompletionQueue* cq, void* tag) override;
     ::grpc::ClientAsyncReader< ::proto::Feature>* PrepareAsyncExtractFaceRegTableDatasRaw(::grpc::ClientContext* context, const ::proto::Empty& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientReader< ::proto::UpdateNotity>* RegisterClientRaw(::grpc::ClientContext* context, const ::proto::Empty& request) override;
+    ::grpc::ClientAsyncReader< ::proto::UpdateNotity>* AsyncRegisterClientRaw(::grpc::ClientContext* context, const ::proto::Empty& request, ::grpc::CompletionQueue* cq, void* tag) override;
+    ::grpc::ClientAsyncReader< ::proto::UpdateNotity>* PrepareAsyncRegisterClientRaw(::grpc::ClientContext* context, const ::proto::Empty& request, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_StorageEmployeeFace_;
     const ::grpc::internal::RpcMethod rpcmethod_StorageStrangerFace_;
     const ::grpc::internal::RpcMethod rpcmethod_ExtractFaceRegTableDatas_;
+    const ::grpc::internal::RpcMethod rpcmethod_RegisterClient_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
@@ -121,6 +147,8 @@ class LonganDataCenter final {
     virtual ::grpc::Status StorageStrangerFace(::grpc::ServerContext* context, const ::proto::UserParam* request, ::proto::StorageReply* response);
     // 拉取人脸注册表的所有数据
     virtual ::grpc::Status ExtractFaceRegTableDatas(::grpc::ServerContext* context, const ::proto::Empty* request, ::grpc::ServerWriter< ::proto::Feature>* writer);
+    // 注册客户端，用于之后的更新通知接收
+    virtual ::grpc::Status RegisterClient(::grpc::ServerContext* context, const ::proto::Empty* request, ::grpc::ServerWriter< ::proto::UpdateNotity>* writer);
   };
   template <class BaseClass>
   class WithAsyncMethod_StorageEmployeeFace : public BaseClass {
@@ -182,7 +210,27 @@ class LonganDataCenter final {
       ::grpc::Service::RequestAsyncServerStreaming(2, context, request, writer, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_StorageEmployeeFace<WithAsyncMethod_StorageStrangerFace<WithAsyncMethod_ExtractFaceRegTableDatas<Service > > > AsyncService;
+  template <class BaseClass>
+  class WithAsyncMethod_RegisterClient : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithAsyncMethod_RegisterClient() {
+      ::grpc::Service::MarkMethodAsync(3);
+    }
+    ~WithAsyncMethod_RegisterClient() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status RegisterClient(::grpc::ServerContext* context, const ::proto::Empty* request, ::grpc::ServerWriter< ::proto::UpdateNotity>* writer) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestRegisterClient(::grpc::ServerContext* context, ::proto::Empty* request, ::grpc::ServerAsyncWriter< ::proto::UpdateNotity>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncServerStreaming(3, context, request, writer, new_call_cq, notification_cq, tag);
+    }
+  };
+  typedef WithAsyncMethod_StorageEmployeeFace<WithAsyncMethod_StorageStrangerFace<WithAsyncMethod_ExtractFaceRegTableDatas<WithAsyncMethod_RegisterClient<Service > > > > AsyncService;
   template <class BaseClass>
   class WithGenericMethod_StorageEmployeeFace : public BaseClass {
    private:
@@ -230,6 +278,23 @@ class LonganDataCenter final {
     }
     // disable synchronous version of this method
     ::grpc::Status ExtractFaceRegTableDatas(::grpc::ServerContext* context, const ::proto::Empty* request, ::grpc::ServerWriter< ::proto::Feature>* writer) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_RegisterClient : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithGenericMethod_RegisterClient() {
+      ::grpc::Service::MarkMethodGeneric(3);
+    }
+    ~WithGenericMethod_RegisterClient() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status RegisterClient(::grpc::ServerContext* context, const ::proto::Empty* request, ::grpc::ServerWriter< ::proto::UpdateNotity>* writer) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -295,6 +360,26 @@ class LonganDataCenter final {
     }
   };
   template <class BaseClass>
+  class WithRawMethod_RegisterClient : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithRawMethod_RegisterClient() {
+      ::grpc::Service::MarkMethodRaw(3);
+    }
+    ~WithRawMethod_RegisterClient() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status RegisterClient(::grpc::ServerContext* context, const ::proto::Empty* request, ::grpc::ServerWriter< ::proto::UpdateNotity>* writer) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestRegisterClient(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncWriter< ::grpc::ByteBuffer>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncServerStreaming(3, context, request, writer, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
   class WithStreamedUnaryMethod_StorageEmployeeFace : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service *service) {}
@@ -355,8 +440,28 @@ class LonganDataCenter final {
     // replace default version of method with split streamed
     virtual ::grpc::Status StreamedExtractFaceRegTableDatas(::grpc::ServerContext* context, ::grpc::ServerSplitStreamer< ::proto::Empty,::proto::Feature>* server_split_streamer) = 0;
   };
-  typedef WithSplitStreamingMethod_ExtractFaceRegTableDatas<Service > SplitStreamedService;
-  typedef WithStreamedUnaryMethod_StorageEmployeeFace<WithStreamedUnaryMethod_StorageStrangerFace<WithSplitStreamingMethod_ExtractFaceRegTableDatas<Service > > > StreamedService;
+  template <class BaseClass>
+  class WithSplitStreamingMethod_RegisterClient : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithSplitStreamingMethod_RegisterClient() {
+      ::grpc::Service::MarkMethodStreamed(3,
+        new ::grpc::internal::SplitServerStreamingHandler< ::proto::Empty, ::proto::UpdateNotity>(std::bind(&WithSplitStreamingMethod_RegisterClient<BaseClass>::StreamedRegisterClient, this, std::placeholders::_1, std::placeholders::_2)));
+    }
+    ~WithSplitStreamingMethod_RegisterClient() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status RegisterClient(::grpc::ServerContext* context, const ::proto::Empty* request, ::grpc::ServerWriter< ::proto::UpdateNotity>* writer) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with split streamed
+    virtual ::grpc::Status StreamedRegisterClient(::grpc::ServerContext* context, ::grpc::ServerSplitStreamer< ::proto::Empty,::proto::UpdateNotity>* server_split_streamer) = 0;
+  };
+  typedef WithSplitStreamingMethod_ExtractFaceRegTableDatas<WithSplitStreamingMethod_RegisterClient<Service > > SplitStreamedService;
+  typedef WithStreamedUnaryMethod_StorageEmployeeFace<WithStreamedUnaryMethod_StorageStrangerFace<WithSplitStreamingMethod_ExtractFaceRegTableDatas<WithSplitStreamingMethod_RegisterClient<Service > > > > StreamedService;
 };
 
 }  // namespace proto

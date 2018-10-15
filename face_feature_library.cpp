@@ -59,7 +59,6 @@ std::shared_ptr<FaceFeature> FaceFeatureLibrary::GetStrangerCache(int index)
 
 bool FaceFeatureLibrary::LoadRegFaceLib()
 {
-
     auto dc = Configs::GetDataCenterConfig();
     DataCenter data_center(grpc::CreateChannel(
                                dc->addr, grpc::InsecureChannelCredentials()));
@@ -69,10 +68,19 @@ bool FaceFeatureLibrary::LoadRegFaceLib()
     if (!res) {
         return false;
     }
+
+    ClearupRegFaceLib();
+
     std::lock_guard<std::mutex> lock(reg_face_mutex_);
     reg_face_lib_ = std::move(features);
 
     return true;
+}
+
+void FaceFeatureLibrary::ClearupRegFaceLib()
+{
+    std::lock_guard<std::mutex> lock(reg_face_mutex_);
+    reg_face_lib_.clear();
 }
 
 size_t FaceFeatureLibrary::GetRegFaceCount()

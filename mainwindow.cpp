@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include <QThread>
+#include <thread>
 #include "aithreadsmanage.h"
 #include "ui_mainwindow.h"
 #include "cameractrl.h"
@@ -100,6 +101,9 @@ void MainWindow::Initialize()
     //分配人脸注册分析线程
     GetAiManageObj()->AllocateThreads();
 
+    //监听人脸注册库
+    std::thread mt(&AiThreadsManage::MonitorFaceLib, GetAiManageObj());
+    mt.detach();
 
     //开启摄像头
     HWND hwnd = (HWND)winId();

@@ -35,6 +35,8 @@ public:
     //加载注册人脸库数据
     bool LoadRegFaceLib();
 
+    void ClearupRegFaceLib(); //清空注册人脸库
+
     //获取注册人脸个数
     size_t GetRegFaceCount();
 
