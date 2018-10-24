@@ -131,6 +131,10 @@ void AiResultReport::RecvAiResult(const AiResult &result)
 
 void AiResultReport::RecvEmployeeResult(const AiResult &result)
 {
+    std::string name = result.feature_->name;
+    std::string photo = result.feature_->face_photo;
+    std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> ft = result.feature_->frame_time_;
+
     //推送给php
     std::thread push_info([&](std::shared_ptr<FaceFeature> f, const std::string& name, const std::string& photo){
         auto feature = f;
@@ -142,17 +146,17 @@ void AiResultReport::RecvEmployeeResult(const AiResult &result)
         PushRedis redis;
         std::time_t unix_timestamp = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
         redis.Push(name, "1", photo, unix_timestamp);
-    }, std::move(result.feature_), result.feature_->name, result.feature_->face_photo);
+    }, std::move(result.feature_), name, photo);
     push_info.detach();
 
     //记录日志
-    std::time_t frame_time = std::chrono::system_clock::to_time_t(result.feature_->frame_time_);
+    std::time_t frame_time = std::chrono::system_clock::to_time_t(ft);
     std::stringstream ss;
     ss << std::put_time(std::localtime(&frame_time), "%F %T");
 
     auto end = std::chrono::system_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - result.feature_->frame_time_);
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - ft);
     double elapsed = double(duration.count()) * std::chrono::milliseconds::period::num / std::chrono::milliseconds::period::den;
-    LogI(" Employee frame_serial=%u, package_serial=%d,图片帧时间=%s, 处理所花费时间=%0.3f秒", result.frame_serial_, result.package_serial_,ss.str().c_str(), elapsed);
+    LogI(" %s new Employee frame_serial=%u, package_serial=%d,图片帧时间=%s, 处理所花费时间=%0.3f秒", name.c_str(), result.frame_serial_, result.package_serial_,ss.str().c_str(), elapsed);
 
 }

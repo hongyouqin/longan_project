@@ -28,7 +28,9 @@ FaceProcess::FaceProcess(QObject *parent) : QObject(parent)
 
 FaceProcess::~FaceProcess()
 {
-    disconnect(this, SIGNAL(faces_detected_signal(const FacesData&)), face_analysis_.get(), SLOT(RecvDetectedData(const FacesData&)));
+    //disconnect(this, SIGNAL(faces_detected_signal(const FacesData&)), face_analysis_.get(), SLOT(RecvDetectedData(const FacesData&)));
+
+    LogI("析构FaceProcess");
 
     face_analysis_.reset();
 

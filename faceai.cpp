@@ -20,6 +20,7 @@ FaceAi::FaceAi(QObject *parent) : QObject(parent)
 
 FaceAi::~FaceAi()
 {
+    LogI("析构Ai");
     if (fr_engine_) {
         fr_engine_->UnInstall();
     }
