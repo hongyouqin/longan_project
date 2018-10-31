@@ -63,7 +63,8 @@ int FaceFilterBarrier::Barrier(const FaceFeature &feature)
             std::thread push_info([&](const std::string& name, const std::string& photo){
                 PushRedis redis;
                 std::time_t unix_timestamp = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-                redis.Push(name, "1", photo, unix_timestamp);
+                auto hk = Configs::GetHkConfig();
+                redis.Push(name, hk->ip, photo, unix_timestamp);
             },result->name, result->face_photo);
             push_info.detach();
 

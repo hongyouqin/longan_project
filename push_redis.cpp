@@ -31,7 +31,7 @@ bool PushRedis::Push(const std::string& user_name, const std::string& camera_id,
     }
     freeReplyObject(reply);
 
-    reply = (redisReply*)redisCommand(conn, "publish visit_data_queue {\"username\":\"%s\",\"camera_uid\":\"%s\",\"pic_url\":\"%s\",\"time\":%u}", user_name.c_str(), camera_id.c_str(), pic_url.c_str(), time);
+    reply = (redisReply*)redisCommand(conn, "publish visit_data_queue {\"username\":\"%s\",\"camera_uid\":\"%s\",\"pic_url\":\"%s\",\"time\":%u}", user_name.c_str(), "1", pic_url.c_str(), time);
     if (nullptr == reply || reply->type == REDIS_REPLY_ERROR) {
         LogE("publish failed");
         redisFree(conn);

@@ -53,7 +53,8 @@ void AiResultReport::PushStranger(const FaceFeature &feature, int package_serial
         std::thread push_info([&](const std::string& name, const std::string& photo){
             PushRedis redis;
             std::time_t unix_timestamp = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-            redis.Push(name, "1", photo, unix_timestamp);
+            auto hk = Configs::GetHkConfig();
+            redis.Push(name, hk->ip, photo, unix_timestamp);
         }, "陌生人", "http://192.168.79.206:8005/face_lib/test/15372566646368847403.jpg");
         push_info.detach();
     } else {
@@ -68,8 +69,9 @@ void AiResultReport::PushStranger(const FaceFeature &feature, int package_serial
             //推送给php
             std::thread push_info([&](const std::string& name, const std::string& photo){
                 PushRedis redis;
+                auto hk = Configs::GetHkConfig();
                 std::time_t unix_timestamp = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-                redis.Push(name, "1", photo, unix_timestamp);
+                redis.Push(name, hk->ip, photo, unix_timestamp);
             }, "陌生人", "http://192.168.79.206:8005/face_lib/test/15372566646368847403.jpg");
             push_info.detach();
 
@@ -84,17 +86,18 @@ void AiResultReport::RecvAiResult(const AiResult &result)
     //LogI("frame_serial=%u, package_serial=%d", result.frame_serial_, result.package_serial_);
     std::map<int, std::vector<std::shared_ptr<AiResult>>>::iterator iter;
     std::vector<std::shared_ptr<AiResult>> v;
-    if ((iter = result_map_.find(result.package_serial_)) == result_map_.cend()) {
+    if ((iter = result_map_.find(result.frame_serial_)) == result_map_.cend()) {
         //如果没有找到，就新创建一个队列
         std::shared_ptr<AiResult> ai_res = std::make_shared<AiResult>(result);
         v.emplace_back(ai_res);
-        result_map_[result.package_serial_] = v;
+        result_map_[result.frame_serial_] = v;
     } else {
        v = iter->second;
        std::shared_ptr<AiResult> ai_res = std::make_shared<AiResult>(result);
        v.emplace_back(ai_res);
-       result_map_[result.package_serial_] = v;
+       result_map_[result.frame_serial_] = v;
     }
+    LogI("%%%%%%%%%%%%%%%%%%处理结果队列数: %d*********************", result_map_.size());
 
     int count = static_cast<int>(v.size());
     if (count == result.package_num_) {
@@ -119,7 +122,7 @@ void AiResultReport::RecvAiResult(const AiResult &result)
         if (iter != result_map_.cend()) {
             result_map_.erase(iter);
         } else {
-            iter = result_map_.find(result.package_serial_);
+            iter = result_map_.find(result.frame_serial_);
             if (iter != result_map_.cend()) {
                 result_map_.erase(iter);
             }
@@ -145,7 +148,8 @@ void AiResultReport::RecvEmployeeResult(const AiResult &result)
 
         PushRedis redis;
         std::time_t unix_timestamp = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-        redis.Push(name, "1", photo, unix_timestamp);
+        auto hk = Configs::GetHkConfig();
+        redis.Push(name, hk->ip, photo, unix_timestamp);
     }, std::move(result.feature_), name, photo);
     push_info.detach();
 
