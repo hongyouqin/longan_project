@@ -22,7 +22,6 @@ void AiResultReport::PushStranger(const FaceFeature &feature, int package_serial
     int len = lib->GetStrangerCacheLen();
     auto config = Configs::GetSystemConfig();
     if (config->is_push_stranger != 1) {
-        LogI("*****陌生人%d", package_serial);
         return;
     }
 
@@ -97,7 +96,6 @@ void AiResultReport::RecvAiResult(const AiResult &result)
        v.emplace_back(ai_res);
        result_map_[result.frame_serial_] = v;
     }
-    LogI("%%%%%%%%%%%%%%%%%%处理结果队列数: %d*********************", result_map_.size());
 
     int count = static_cast<int>(v.size());
     if (count == result.package_num_) {
@@ -116,6 +114,20 @@ void AiResultReport::RecvAiResult(const AiResult &result)
             //陌生人处理
             auto feature = result.feature_.get();
             PushStranger(*feature, result.frame_serial_);
+
+            //陌生人分数
+            auto max_score = [&]() ->float {
+                 float scorce = 0.0f;
+                 for (auto iter2 = v.cbegin(); iter2 != v.cend(); ++iter2) {
+                     if ((*iter2)->face_score_ > scorce) {
+                        scorce =(*iter2)->face_score_;
+                     }
+                 }
+                 return scorce;
+            };
+
+            LogI("*****陌生人分数: %f", max_score());
+
         }
 
         //删除元素
@@ -127,6 +139,8 @@ void AiResultReport::RecvAiResult(const AiResult &result)
                 result_map_.erase(iter);
             }
         }
+
+        LogI("%%%%%%%%%%%%%%%%%%处理结果队列数: %d*********************", result_map_.size());
     }
 
 
@@ -161,6 +175,6 @@ void AiResultReport::RecvEmployeeResult(const AiResult &result)
     auto end = std::chrono::system_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - ft);
     double elapsed = double(duration.count()) * std::chrono::milliseconds::period::num / std::chrono::milliseconds::period::den;
-    LogI(" %s new Employee frame_serial=%u, package_serial=%d,图片帧时间=%s, 处理所花费时间=%0.3f秒", name.c_str(), result.frame_serial_, result.package_serial_,ss.str().c_str(), elapsed);
+    LogI(" %s new Employee frame_serial=%u,图片帧时间=%s, 处理所花费时间=%0.3f秒, 人脸分数=%f", name.c_str(), result.frame_serial_, elapsed, result.face_score_);
 
 }

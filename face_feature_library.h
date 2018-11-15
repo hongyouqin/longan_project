@@ -24,6 +24,8 @@ public:
 
     int GetCacheLen();
 
+    void ClearCache();
+
     //这里更新时间，做了特殊处理，注意
     bool UpdateCacheTime(std::shared_ptr<FaceFeature> &face, const std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>& now, int tap_value);//
 

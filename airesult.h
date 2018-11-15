@@ -15,6 +15,8 @@ struct AiResult
 
     int package_num_;//包的数量
 
+    float face_score_;
+
     std::shared_ptr<FaceFeature> feature_;
 };
 

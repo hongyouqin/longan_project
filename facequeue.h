@@ -22,6 +22,8 @@ public:
 
     T GetAt(int index);
 
+    void ClearAll();
+
 private:
     std::list<T> q_;
 
@@ -74,6 +76,11 @@ T FaceQueue<T>::GetAt(int index)
     }
 
     return *iter;
+}
+
+template<class T>
+void FaceQueue<T>::ClearAll() {
+    q_.clear();
 }
 
 

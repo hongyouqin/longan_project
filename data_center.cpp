@@ -118,6 +118,9 @@ void DataCenter::UpdateFaceLib(std::chrono::time_point<std::chrono::system_clock
                 auto face_lib = GetFeatureLib();
                 if (face_lib->LoadRegFaceLib()) {
                     GetAiManageObj()->CleanupAiContainter();
+
+                    face_lib->ClearCache();
+
                     //分配人脸注册分析线程
                     GetAiManageObj()->AllocateThreads();
                     LogI("更新人脸库完成");

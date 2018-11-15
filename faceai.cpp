@@ -167,6 +167,7 @@ void FaceAi::RecvEmployeeData(const FaceFeature& face)
         ai_result.feature_ = std::make_shared<FaceFeature>(face);
         ai_result.package_serial_ = serial_number();
         ai_result.package_num_ = GetAiManageObj()->GetRegFaceNum();
+        ai_result.face_score_ = score;
         ai_result_signal(ai_result);
         return;
     }
@@ -185,6 +186,7 @@ void FaceAi::RecvEmployeeData(const FaceFeature& face)
         employee_res.feature_ = result;
         employee_res.package_serial_ = serial_number();
         employee_res.package_num_ = GetAiManageObj()->GetRegFaceNum();
+        employee_res.face_score_ = score;
         ai_employee_result_signal(employee_res);
     }
 
@@ -195,6 +197,7 @@ void FaceAi::RecvEmployeeData(const FaceFeature& face)
     ai_result.feature_ = std::make_shared<FaceFeature>(face);
     ai_result.package_serial_ = serial_number();
     ai_result.package_num_ = GetAiManageObj()->GetRegFaceNum();
+    ai_result.face_score_ = score;
     ai_result_signal(ai_result);
 
 }

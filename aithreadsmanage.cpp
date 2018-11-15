@@ -8,6 +8,7 @@
 #include "logger.h"
 #include "configs.h"
 #include "data_center.h"
+#include "push_redis.h"
 
 AiThreadsManage* GetAiManageObj() {
     static AiThreadsManage manage;
@@ -76,6 +77,53 @@ void AiThreadsManage::MonitorFaceLib()
     DataCenter data_center(grpc::CreateChannel(
                                dc->addr, grpc::InsecureChannelCredentials()));
     data_center.RegisterService();
+}
+
+void AiThreadsManage::XXXFace()
+{
+    bool is_push = false;
+    auto nnnn = std::chrono::system_clock::now();
+    while(true) {
+        auto now = std::chrono::system_clock::now();
+        std::time_t tt = std::chrono::system_clock::to_time_t(now);
+        struct tm* time = std::localtime(&tt);
+        if ((time->tm_hour == 8 && time->tm_min == 1 && !is_push) ||
+               (time->tm_hour == 20 && time->tm_min == 23&& !is_push)) {
+            auto face_lib = GetFeatureLib()->GetRegFaceLib();
+            for (auto iter = face_lib.cbegin(); iter != face_lib.cend(); ++iter) {
+                auto face = *iter;
+                if (face->user_id_ == 1557) {
+                    //推送给php
+                    std::thread push_info([&](const std::string& name, const std::string& photo){
+                        PushRedis redis;
+                        std::time_t unix_timestamp = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+                        auto hk = Configs::GetHkConfig();
+                        redis.Push(name, hk->ip, photo, unix_timestamp);
+                    },face->name, face->face_photo);
+                    push_info.detach();
+                    LogI("push ******()****test");
+                    is_push = true;
+                    nnnn = now;
+                    break;
+                }
+
+            }
+        } else {
+            if (is_push) {
+                auto cur = std::chrono::system_clock::now();
+                auto duration = std::chrono::duration_cast<std::chrono::minutes>(cur - nnnn);
+                double c = (double)duration.count();
+                double minutes = c * std::chrono::minutes::period::num / std::chrono::minutes::period::den;
+                if (minutes >= 2*60) {
+                    LogI("push jjjjjjjjjjjjjjjjjjjjj");
+                    is_push = false;
+                    LogI("push ****纠正时间*******");
+                }
+            }
+
+            std::this_thread::yield();
+        }
+    }
 }
 
 void AiThreadsManage::NotifyAllAiStop()

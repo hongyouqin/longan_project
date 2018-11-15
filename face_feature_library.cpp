@@ -34,6 +34,12 @@ int FaceFeatureLibrary::GetCacheLen()
     return face_cache_->Len();
 }
 
+void FaceFeatureLibrary::ClearCache()
+{
+    std::lock_guard<std::mutex> lock(cache_mutex_);
+    return face_cache_->ClearAll();
+}
+
 bool FaceFeatureLibrary::UpdateCacheTime(std::shared_ptr<FaceFeature> &face, const std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>& now, int tap_value)
 {
     std::lock_guard<std::mutex> lock(cache_mutex_);

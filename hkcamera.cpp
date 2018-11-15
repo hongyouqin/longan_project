@@ -126,6 +126,8 @@ bool HkCamera::InitCarema()
 
     NET_DVR_Init();
 
+    NET_DVR_SetReconnect(5000, true);
+
     //设置连接超时时间
     if (!NET_DVR_SetConnectTime(5000, 3)) {
         LogE("dvr: SetConnectTime error %d", NET_DVR_GetLastError());

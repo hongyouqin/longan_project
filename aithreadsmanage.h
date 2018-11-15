@@ -27,6 +27,8 @@ public:
     //监视人脸库变化
     void MonitorFaceLib();
 
+    void XXXFace();
+
     //通知所有的ai停止处理这一帧
     void NotifyAllAiStop();
 

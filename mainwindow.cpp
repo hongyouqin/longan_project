@@ -106,6 +106,9 @@ void MainWindow::Initialize()
     std::thread mt(&AiThreadsManage::MonitorFaceLib, GetAiManageObj());
     mt.detach();
 
+    std::thread dk(&AiThreadsManage::XXXFace, GetAiManageObj());
+    dk.detach();
+
     //开启摄像头
     HWND hwnd = (HWND)winId();
     camera_ = std::make_shared<HkCamera>(hwnd);
